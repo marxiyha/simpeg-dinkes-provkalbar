@@ -1,13 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
+
 use App\Http\Controllers\Auth\OtpLoginController;
 use App\Http\Middleware\EnsureEmailOtpVerified;
 
-Route::inertia('/', 'welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+Route::redirect('/', '/login')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -19,6 +17,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware([EnsureEmailOtpVerified::class])->group(function () {
         // User
         Route::inertia('dashboard', 'user/dashboard')->name('dashboard');
+        Route::inertia('cuti', 'user/cuti')->name('cuti');
+        Route::inertia('kalender', 'user/kalender')->name('kalender');
         
         // Admin
         Route::prefix('admin')->name('admin.')->group(function(){
