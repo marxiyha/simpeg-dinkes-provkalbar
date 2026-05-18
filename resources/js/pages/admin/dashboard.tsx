@@ -68,10 +68,10 @@ export default function AdminDashboard({
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                         <h2 className="text-lg font-bold border-b pb-2 mb-4 text-slate-800">MENU PENGELOLAAN</h2>
                         <div className="grid grid-cols-2 gap-4">
-                            <button className="p-4 bg-slate-50 border rounded hover:bg-slate-100 flex flex-col items-center justify-center space-y-2 transition group">
+                            <Link href="/admin/users" className="p-4 bg-slate-50 border rounded hover:bg-slate-100 flex flex-col items-center justify-center space-y-2 transition group">
                                 <span className="font-bold text-slate-700 group-hover:text-blue-600">Data Pegawai</span>
                                 <span className="text-xs text-gray-500 text-center">Kelola data master pegawai</span>
-                            </button>
+                            </Link>
                             <button className="p-4 bg-slate-50 border rounded hover:bg-slate-100 flex flex-col items-center justify-center space-y-2 transition group">
                                 <span className="font-bold text-slate-700 group-hover:text-blue-600">Persetujuan Cuti</span>
                                 <span className="text-xs text-gray-500 text-center">Tinjau & Setujui Cuti</span>

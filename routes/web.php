@@ -16,14 +16,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Fully protected routes (require both password auth AND email OTP)
     Route::middleware([EnsureEmailOtpVerified::class])->group(function () {
         // User
-        Route::inertia('dashboard', 'user/dashboard')->name('dashboard');
+        Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
         Route::inertia('cuti', 'user/cuti')->name('cuti');
         Route::inertia('kalender', 'user/kalender')->name('kalender');
+        Route::get('dinas-luar', [\App\Http\Controllers\DinasLuarController::class, 'index'])->name('dinasLuar');
+        Route::post('dinas-luar', [\App\Http\Controllers\DinasLuarController::class, 'store'])->name('dinasLuar.store');
         
-        // Admin
-        Route::prefix('admin')->name('admin.')->group(function(){
-            Route::inertia('/dashboard', 'admin/dashboard')->name('dashboard');
-        });
+        // Pegawai CRUD (dipindah dari admin)
+        Route::get('/pegawai', [\App\Http\Controllers\PegawaiController::class, 'index'])->name('pegawai.index');
+        Route::post('/pegawai', [\App\Http\Controllers\PegawaiController::class, 'store'])->name('pegawai.store');
+        Route::put('/pegawai/{pegawai}', [\App\Http\Controllers\PegawaiController::class, 'update'])->name('pegawai.update');
+        Route::delete('/pegawai/{pegawai}', [\App\Http\Controllers\PegawaiController::class, 'destroy'])->name('pegawai.destroy');
+        Route::get('/pegawai/export', [\App\Http\Controllers\PegawaiController::class, 'exportCsv'])->name('pegawai.export');
+        Route::post('/pegawai/import', [\App\Http\Controllers\PegawaiController::class, 'importCsv'])->name('pegawai.import');
     });
 });
 

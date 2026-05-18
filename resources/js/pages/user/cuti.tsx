@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { Auth } from '@/types';
+import { Info } from 'lucide-react';
+import { toast } from 'sonner';
 import CutiChart from '@/components/cuti-chart';
 
 interface RiwayatCuti {
@@ -17,8 +19,9 @@ interface UserCutiProps {
     riwayatCuti?: RiwayatCuti[];
 }
 
-export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: UserCutiProps) {
+export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: UserCutiProps) {
     const [showPanduan, setShowPanduan] = useState(false);
+    const [localSisaCuti, setLocalSisaCuti] = useState(sisaCuti); // Maksimal 24 Hari
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Form handling using Inertia useForm
@@ -30,11 +33,38 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
         bukti_pengajuan: null as File | null,
     });
 
+    // Helper untuk menghitung hari kerja (mengabaikan akhir pekan)
+    const getWorkingDays = (startDate: string, endDate: string) => {
+        if (!startDate || !endDate) return 0;
+        let count = 0;
+        const curDate = new Date(startDate);
+        const end = new Date(endDate);
+        while (curDate <= end) {
+            const dayOfWeek = curDate.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) count++; // 0 = Minggu, 6 = Sabtu
+            curDate.setDate(curDate.getDate() + 1);
+        }
+        return count;
+    };
+
     // Mockup submit handler
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // post(route('cuti.store'), { onSuccess: () => reset() });
-        alert('Pengajuan cuti berhasil disimulasikan!');
+        
+        let potong = 0;
+        if (data.jenis_cuti === 'Tahunan' && data.tanggal_mulai && data.tanggal_selesai) {
+            const workDays = getWorkingDays(data.tanggal_mulai, data.tanggal_selesai);
+            potong = workDays > 6 ? 6 : workDays;
+        }
+
+        if (potong > 0 && localSisaCuti - potong < 0) {
+            toast.error('Sisa cuti tidak mencukupi!');
+            return;
+        }
+
+        setLocalSisaCuti(prev => prev - potong);
+        
+        toast.success(`Pengajuan cuti berhasil! Jatah cuti dipotong ${potong} hari kerja.`);
         reset();
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -57,9 +87,10 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                 <div className="space-x-2">
                     <button
                         onClick={() => setShowPanduan(true)}
-                        className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition"
+                        className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition flex items-center gap-2"
                     >
-                        Panduan Cuti
+                        <Info className="w-4 h-4" />
+                        Panduan
                     </button>
                 </div>
             </div>
@@ -74,9 +105,9 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                     {/* FORM PENGAJUAN */}
                     <div className="md:col-span-1 bg-white text-gray-800 p-6 rounded-lg shadow h-fit">
                         <div className="flex justify-between items-center border-b pb-2 mb-4">
-                            <h2 className="text-lg font-bold text-green-700">FORM PENGAJUAN</h2>
-                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
-                                Sisa Cuti: {sisaCuti} Hari
+                            <h2 className="text-lg font-bold text-primary">FORM PENGAJUAN</h2>
+                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                                Sisa: {localSisaCuti} Hari
                             </span>
                         </div>
 
@@ -84,7 +115,7 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                             <div>
                                 <label className="block text-sm font-semibold mb-1 text-gray-700">Jenis Cuti</label>
                                 <select
-                                    className="w-full border-gray-300 rounded focus:ring-green-500 focus:border-green-500 text-sm"
+                                    className="w-full border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 text-base py-2.5 px-3"
                                     value={data.jenis_cuti}
                                     onChange={(e) => setData('jenis_cuti', e.target.value)}
                                 >
@@ -100,7 +131,7 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                                 <label className="block text-sm font-semibold mb-1 text-gray-700">Tanggal Mulai</label>
                                 <input
                                     type="date"
-                                    className="w-full border-gray-300 rounded focus:ring-green-500 focus:border-green-500 text-sm"
+                                    className="w-full border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 text-base py-2.5 px-3"
                                     value={data.tanggal_mulai}
                                     onChange={(e) => setData('tanggal_mulai', e.target.value)}
                                     required
@@ -111,7 +142,7 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                                 <label className="block text-sm font-semibold mb-1 text-gray-700">Tanggal Selesai</label>
                                 <input
                                     type="date"
-                                    className="w-full border-gray-300 rounded focus:ring-green-500 focus:border-green-500 text-sm"
+                                    className="w-full border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 text-base py-2.5 px-3"
                                     value={data.tanggal_selesai}
                                     onChange={(e) => setData('tanggal_selesai', e.target.value)}
                                     required
@@ -121,7 +152,7 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                             <div>
                                 <label className="block text-sm font-semibold mb-1 text-gray-700">Alasan Cuti</label>
                                 <textarea
-                                    className="w-full border-gray-300 rounded focus:ring-green-500 focus:border-green-500 text-sm"
+                                    className="w-full border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 text-base py-2.5 px-3"
                                     rows={3}
                                     placeholder="Jelaskan alasan cuti..."
                                     value={data.alasan}
@@ -170,7 +201,7 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
 
                     {/* RIWAYAT CUTI */}
                     <div className="md:col-span-2 bg-white text-gray-800 p-6 rounded-lg shadow">
-                        <h2 className="text-lg font-bold border-b pb-2 mb-4 text-green-700">RIWAYAT CUTI SAYA</h2>
+                        <h2 className="text-lg font-bold border-b pb-2 mb-4 text-primary">RIWAYAT CUTI SAYA</h2>
 
                         {riwayatCuti.length === 0 ? (
                             <div className="text-center py-10">
@@ -197,8 +228,8 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
                                                 <td className="px-4 py-3 text-gray-600">{cuti.alasan}</td>
                                                 <td className="px-4 py-3">
                                                     <span className={`px-2 py-1 rounded text-xs font-bold ${cuti.status === 'Disetujui' ? 'bg-green-100 text-green-800' :
-                                                            cuti.status === 'Ditolak' ? 'bg-red-100 text-red-800' :
-                                                                'bg-yellow-100 text-yellow-800'
+                                                        cuti.status === 'Ditolak' ? 'bg-red-100 text-red-800' :
+                                                            'bg-yellow-100 text-yellow-800'
                                                         }`}>
                                                         {cuti.status}
                                                     </span>
@@ -215,20 +246,45 @@ export default function UserCutiPage({ auth, sisaCuti = 12, riwayatCuti = [] }: 
 
             {/* POPUP PANDUAN */}
             {showPanduan && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-                    <div className="bg-white text-gray-800 w-full max-w-2xl rounded-lg p-6 max-h-[80vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold text-green-700 mb-4">PANDUAN PENGAJUAN CUTI</h3>
-                        <div className="text-sm space-y-3">
-                            <p><strong>1. Sisa Cuti Tahunan</strong><br />Pastikan Anda masih memiliki sisa cuti tahunan sebelum mengajukan Cuti Tahunan.</p>
-                            <p><strong>2. Proses Persetujuan</strong><br />Setiap pengajuan cuti akan masuk ke status "Menunggu" dan harus disetujui oleh Kepala Unit terkait sebelum sah digunakan.</p>
-                            <p><strong>3. Cuti Sakit</strong><br />Untuk Cuti Sakit lebih dari 1 hari, biasanya diwajibkan melampirkan surat keterangan dokter ke bagian Kepegawaian.</p>
+                <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+                    <div className="bg-white text-gray-800 w-full max-w-lg rounded-xl p-6 shadow-2xl max-h-[80vh] overflow-y-auto transform transition-all">
+                        <div className="flex items-center gap-3 mb-5 border-b pb-4">
+                            <div className="bg-green-100 p-2 rounded-full">
+                                <Info className="w-6 h-6 text-green-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800">Panduan Pengajuan Cuti</h3>
                         </div>
-                        <button
-                            onClick={() => setShowPanduan(false)}
-                            className="mt-6 bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded hover:bg-gray-300 w-full transition"
-                        >
-                            Tutup Panduan
-                        </button>
+                        <div className="text-sm space-y-4 text-gray-600">
+                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <strong className="text-gray-800 flex items-center gap-2 mb-1">
+                                    <span className="bg-green-200 text-green-800 w-5 h-5 rounded-full flex items-center justify-center text-xs">1</span>
+                                    Sisa Cuti Tahunan
+                                </strong>
+                                Pastikan Anda masih memiliki sisa cuti tahunan sebelum mengajukan Cuti Tahunan.
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <strong className="text-gray-800 flex items-center gap-2 mb-1">
+                                    <span className="bg-green-200 text-green-800 w-5 h-5 rounded-full flex items-center justify-center text-xs">2</span>
+                                    Proses Persetujuan
+                                </strong>
+                                Setiap pengajuan cuti akan masuk ke status "Menunggu" dan harus disetujui oleh Kepala Unit terkait sebelum sah digunakan.
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <strong className="text-gray-800 flex items-center gap-2 mb-1">
+                                    <span className="bg-green-200 text-green-800 w-5 h-5 rounded-full flex items-center justify-center text-xs">3</span>
+                                    Cuti Sakit
+                                </strong>
+                                Untuk Cuti Sakit lebih dari 1 hari, biasanya diwajibkan melampirkan surat keterangan dokter ke bagian Kepegawaian.
+                            </div>
+                        </div>
+                        <div className="mt-6 pt-4 border-t">
+                            <button
+                                onClick={() => setShowPanduan(false)}
+                                className="bg-gray-100 text-gray-800 font-bold px-4 py-2.5 rounded-lg hover:bg-gray-200 w-full transition active:scale-95"
+                            >
+                                Mengerti & Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

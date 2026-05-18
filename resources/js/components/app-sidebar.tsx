@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid, CalendarDays, Calendar, LogOut } from 'lucide-react';
+import { BookOpen, FolderGit2, LayoutGrid, CalendarDays, Calendar, LogOut, MapPin, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -33,6 +33,16 @@ const mainNavItems: NavItem[] = [
         title: 'Kalender',
         href: kalender(),
         icon: Calendar,
+    },
+    {
+        title: 'Dinas Luar',
+        href: '/dinas-luar',
+        icon: MapPin,
+    },
+    {
+        title: 'Data Pegawai',
+        href: '/pegawai',
+        icon: Users,
     },
 ];
 
