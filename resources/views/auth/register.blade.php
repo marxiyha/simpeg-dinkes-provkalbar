@@ -1,52 +1,52 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+<!DOCTYPE html>
+<html>
+<head>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+<title>Register</title>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+<script src="https://cdn.tailwindcss.com"></script>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+</head>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+<body class="bg-green-100 flex items-center justify-center h-screen">
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+<div class="bg-white p-10 rounded-3xl shadow-2xl w-[500px]">
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+<h1 class="text-4xl font-bold text-center text-green-700 mb-8">
+REGISTER
+</h1>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+<form>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+<input
+type="text"
+placeholder="Username"
+class="w-full border p-4 rounded-xl mb-4">
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+<input
+type="email"
+placeholder="Email"
+class="w-full border p-4 rounded-xl mb-4">
+
+<input
+type="password"
+placeholder="Password"
+class="w-full border p-4 rounded-xl mb-4">
+
+<input
+type="password"
+placeholder="Konfirmasi Password"
+class="w-full border p-4 rounded-xl mb-4">
+
+<button
+class="w-full bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl">
+Daftar
+</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

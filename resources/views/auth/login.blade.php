@@ -1,47 +1,68 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html>
+<head>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <title>Login</title>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-green-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-14 rounded-[35px] shadow-2xl w-[620px]">
+
+        <h1 class="text-6xl font-bold text-green-700 text-center mb-12">
+            SUPER ADMIN LOGIN
+        </h1>
+
+        <!-- FORM LOGIN -->
+        <form action="/login" method="POST">
+
+            @csrf
+
+            <!-- EMAIL -->
+            <input
+                type="email"
+                name="email"
+                placeholder="Masukkan Email"
+                class="w-full p-6 mb-8 rounded-3xl bg-slate-200 text-3xl outline-none"
+                required
+            >
+
+            <!-- PASSWORD -->
+            <input
+                type="password"
+                name="password"
+                placeholder="Masukkan Password"
+                class="w-full p-6 mb-8 rounded-3xl bg-slate-200 text-3xl outline-none"
+                required
+            >
+
+            <!-- BUTTON LOGIN -->
+            <button
+                type="submit"
+                class="w-full bg-green-700 hover:bg-green-800 text-white text-3xl py-5 rounded-3xl"
+            >
+                Login
+            </button>
+
+        </form>
+
+        <!-- MENU BAWAH -->
+        <div class="flex justify-between mt-10 text-green-700 text-2xl">
+
+            <a href="/register">
+                Register
+            </a>
+
+            <a href="/forgot-password">
+                Lupa Password
+            </a>
+
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</body>
+</html>
