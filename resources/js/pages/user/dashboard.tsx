@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { Auth } from '@/types';
-import { logout } from '@/routes';
+import CutiChart from '@/components/cuti-chart';
 
 interface RiwayatDL {
     lokasi: string;
@@ -29,10 +29,10 @@ export default function UserDashboard({ auth, sisaCuti = 12, riwayatDL = [] }: U
             <Head title="Dashboard Pegawai - Dinkes Kalbar" />
 
             {/* HEADER */}
-            <div className="bg-white text-green-800 p-4 shadow-md flex justify-between items-center">
+            <div className="bg-white text-primary p-4 shadow-md flex justify-between items-center">
                 <div>
-                    <h1 className="text-xl font-bold">SISTEM SDM DINKES KALBAR</h1>
-                    <p className="text-xs font-semibold text-green-700">Halo, {namaPegawai}!</p>
+                    <h1 className="text-xl font-bold">Dashboard</h1>
+                    <span className="text-xs">Halo, {namaPegawai}!</span>
                 </div>
                 <div className="space-x-2">
                     <button
@@ -40,20 +40,18 @@ export default function UserDashboard({ auth, sisaCuti = 12, riwayatDL = [] }: U
                         className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600">
                         Panduan
                     </button>
-                    <Link
-                        href={logout().url} method="post" as="button"
-                        className="bg-red-500 text-white px-4 py-2 rounded text-sm hover:bg-red-600">
-                        Logout
-                    </Link>
                 </div>
             </div>
 
             {/* KONTEN UTAMA */}
-            <div className="max-w-6xl mx-auto mt-6 space-y-6">
+            <div className="max-w-6xl mx-auto mt-6 space-y-6 px-4 md:px-0">
+                
+                {/* GRAFIK CUTI */}
+                <CutiChart />
 
                 {/* 1. KARTU PROFIL PEGAWAI */}
                 <div className="bg-white text-gray-800 p-6 rounded-lg shadow">
-                    <h2 className="text-lg font-bold border-b pb-2 mb-4 text-green-700">PROFIL SAYA</h2>
+                    <h2 className="text-lg font-bold border-b pb-2 mb-4 text-primary">PROFIL SAYA</h2>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                         <div><span className="font-bold">Nama:</span> {namaPegawai}</div>
                         <div><span className="font-bold">NIP / NIK:</span> {pegawai.nip || '-'}</div>
@@ -68,7 +66,7 @@ export default function UserDashboard({ auth, sisaCuti = 12, riwayatDL = [] }: U
                     {/* 2. KARTU INFORMASI CUTI */}
                     <div className="bg-white text-gray-800 p-6 rounded-lg shadow">
                         <div className="flex justify-between items-center border-b pb-2 mb-4">
-                            <h2 className="text-lg font-bold text-green-700">INFORMASI CUTI</h2>
+                            <h2 className="text-lg font-bold text-primary">INFORMASI CUTI</h2>
                             <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
                                 Sisa: {sisaCuti} Hari
                             </span>
@@ -83,7 +81,7 @@ export default function UserDashboard({ auth, sisaCuti = 12, riwayatDL = [] }: U
 
                     {/* 3. KARTU KALENDER DINAS LUAR (READ ONLY) */}
                     <div className="bg-white text-gray-800 p-6 rounded-lg shadow">
-                        <h2 className="text-lg font-bold border-b pb-2 mb-4 text-green-700">JADWAL DINAS LUAR SAYA</h2>
+                        <h2 className="text-lg font-bold border-b pb-2 mb-4 text-primary">JADWAL DINAS LUAR SAYA</h2>
                         {riwayatDL.length === 0 ? (
                             <p className="text-sm text-gray-500 italic text-center py-4">Tidak ada jadwal Dinas Luar di bulan ini.</p>
                         ) : (

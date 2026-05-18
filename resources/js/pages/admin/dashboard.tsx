@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { Auth } from '@/types';
 import { logout } from '@/routes';
+import CutiChart from '@/components/cuti-chart';
 
 interface AdminDashboardProps {
     auth: Auth;
@@ -58,6 +59,9 @@ export default function AdminDashboard({
                         <p className="text-3xl font-black text-slate-800">{pegawaiDinasLuar}</p>
                     </div>
                 </div>
+
+                {/* GRAFIK CUTI ADMIN */}
+                <CutiChart />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* MENU KELOLA ADMIN */}
