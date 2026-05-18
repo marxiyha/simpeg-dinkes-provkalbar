@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import { BookOpen, FolderGit2, LayoutGrid, CalendarDays, Calendar, LogOut, MapPin, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -12,9 +12,11 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, cuti, kalender, logout } from '@/routes';
 import type { NavItem } from '@/types';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 
 const mainNavItems: NavItem[] = [
     {
@@ -22,22 +24,36 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-];
-
-const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
+        title: 'Cuti',
+        href: cuti(),
+        icon: CalendarDays,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        title: 'Kalender',
+        href: kalender(),
+        icon: Calendar,
+    },
+    {
+        title: 'Dinas Luar',
+        href: '/dinas-luar',
+        icon: MapPin,
+    },
+    {
+        title: 'Data Pegawai',
+        href: '/pegawai',
+        icon: Users,
     },
 ];
 
 export function AppSidebar() {
+    const cleanup = useMobileNavigation();
+
+    const handleLogout = () => {
+        cleanup();
+        router.flushAll();
+    };
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -57,7 +73,21 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <Link
+                                href={logout()}
+                                as="button"
+                                method="post"
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="h-8 w-8" />
+                                <span>Log out</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
