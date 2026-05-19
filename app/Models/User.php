@@ -1,60 +1,41 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * Field yang boleh diisi
-     */
-
     protected $fillable = [
-
-        'username',
-
         'name',
-
+        'username',
         'email',
-
         'password',
-
         'role',
-
-        'is_active',
+        'is_active'
     ];
 
-    /**
-     * Hidden field
-     */
-
     protected $hidden = [
-
         'password',
-
         'remember_token',
     ];
 
-    /**
-     * Casting
-     */
+    protected $casts = [
+        'password' => 'hashed',
+    ];
 
-    protected function casts(): array
+    public function leaves()
     {
-        return [
+        return $this->hasMany(Leave::class);
+    }
 
-            'email_verified_at' => 'datetime',
-
-            'password' => 'hashed',
-
-            'is_active' => 'boolean',
-        ];
+    public function fieldTasks()
+    {
+        return $this->hasMany(FieldTask::class);
     }
 }
+
+
