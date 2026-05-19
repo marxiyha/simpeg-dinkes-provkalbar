@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 | MODELS
 |--------------------------------------------------------------------------
 */
+
 use App\Models\UserManagement;
 use App\Models\PegawaiDinkes;
 use App\Models\PegawaiUPT;
@@ -19,6 +20,7 @@ use App\Models\KalenderDinasLuar;
 | EXPORT
 |--------------------------------------------------------------------------
 */
+
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ArrayExport;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -28,6 +30,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 | ROOT
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return redirect('/login');
 });
@@ -37,27 +40,34 @@ Route::get('/', function () {
 | LOGIN
 |--------------------------------------------------------------------------
 */
+
 Route::get('/login', fn () => view('auth.login'));
 
 Route::post('/login', function (Request $request) {
 
-    session([
-        'login' => true,
-        'user' => $request->username
-    ]);
+    $user = UserManagement::where('username', $request->username)->first();
 
-    return redirect('/dashboard');
+    if ($user && password_verify($request->password, $user->password)) {
+        session([
+            'login' => true,
+            'user' => $user->username,
+            'role' => $user->role
+        ]);
+
+        return redirect('/dashboard');
+    }
+
+    return back()->with('error', 'Login gagal');
 });
 
 /*
 |--------------------------------------------------------------------------
-| LOGOUT (FIXED - SUPPORT GET & POST)
+| LOGOUT
 |--------------------------------------------------------------------------
 */
+
 Route::match(['get', 'post'], '/logout', function () {
-
     session()->flush();
-
     return redirect('/login');
 })->name('logout');
 
@@ -66,6 +76,7 @@ Route::match(['get', 'post'], '/logout', function () {
 | REGISTER
 |--------------------------------------------------------------------------
 */
+
 Route::get('/register', fn () => view('auth.register'));
 
 Route::post('/register', function (Request $request) {
@@ -77,6 +88,7 @@ Route::post('/register', function (Request $request) {
     ]);
 
     UserManagement::create([
+        'name' => $request->username,
         'username' => $request->username,
         'email' => $request->email,
         'password' => bcrypt($request->password),
@@ -88,19 +100,14 @@ Route::post('/register', function (Request $request) {
 
 /*
 |--------------------------------------------------------------------------
-| FORGOT PASSWORD (FIXED -> ALWAYS LOGIN AFTER SUBMIT)
+| FORGOT PASSWORD
 |--------------------------------------------------------------------------
 */
+
 Route::get('/forgot-password', fn () => view('auth.forgot-password'));
 
-Route::post('/forgot-password', function (Request $request) {
-
-    $request->validate([
-        'email' => 'required|email'
-    ]);
-
-    return redirect('/login')
-        ->with('success', 'Link reset password berhasil dikirim');
+Route::post('/forgot-password', function () {
+    return redirect('/login')->with('success', 'Reset link dikirim (dummy)');
 });
 
 /*
@@ -108,6 +115,7 @@ Route::post('/forgot-password', function (Request $request) {
 | DASHBOARD
 |--------------------------------------------------------------------------
 */
+
 Route::get('/dashboard', function () {
 
     return view('dashboard', [
@@ -121,27 +129,79 @@ Route::get('/dashboard', function () {
 
 /*
 |--------------------------------------------------------------------------
+| USERS
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/users', fn () => view('users.index', [
+    'users' => UserManagement::latest()->get()
+]));
+
+/*
+|--------------------------------------------------------------------------
+| USERS STORE (FIXED NAME ERROR)
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/users', function (Request $request) {
+
+    $request->validate([
+        'username' => 'required',
+        'email' => 'required|email',
+        'role' => 'required'
+    ]);
+
+    UserManagement::create([
+        'name' => $request->username, // FIX WAJIB
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => bcrypt('123456'),
+        'role' => $request->role
+    ]);
+
+    return redirect('/users')->with('success', 'User berhasil ditambahkan');
+})->name('users.store');
+
+/*
+|--------------------------------------------------------------------------
+| DELETE USER
+|--------------------------------------------------------------------------
+*/
+
+Route::delete('/users/delete/{id}', function ($id) {
+
+    $user = UserManagement::find($id);
+
+    if ($user) {
+        $user->delete();
+    }
+
+    return redirect('/users')->with('success', 'User berhasil dihapus');
+});
+
+/*
+|--------------------------------------------------------------------------
 | PROFIL
 |--------------------------------------------------------------------------
 */
+
 Route::get('/profil', fn () => view('profil.index'));
 
 Route::post('/profil', function (Request $request) {
 
-    if ($request->has('password')) {
+    $user = UserManagement::where('username', session('user'))->first();
 
+    if (!$user) return back();
+
+    if ($request->password) {
         $request->validate([
             'password' => 'required|min:6|confirmed'
         ]);
 
-        $user = UserManagement::where('username', session('user'))->first();
+        $user->password = bcrypt($request->password);
+        $user->save();
 
-        if ($user) {
-            $user->password = bcrypt($request->password);
-            $user->save();
-        }
-
-        return back()->with('success', 'Password berhasil diupdate');
+        return back()->with('success', 'Password diupdate');
     }
 
     return back();
@@ -151,9 +211,7 @@ Route::delete('/profil', function () {
 
     $user = UserManagement::where('username', session('user'))->first();
 
-    if ($user) {
-        $user->delete();
-    }
+    if ($user) $user->delete();
 
     session()->flush();
 
@@ -162,48 +220,22 @@ Route::delete('/profil', function () {
 
 /*
 |--------------------------------------------------------------------------
-| USERS
+| DATA LIST
 |--------------------------------------------------------------------------
 */
-Route::get('/users', function () {
 
-    return view('users.index', [
-        'users' => UserManagement::latest()->get()
-    ]);
-});
-
-/*
-|--------------------------------------------------------------------------
-| DINKES
-|--------------------------------------------------------------------------
-*/
 Route::get('/dinkes', fn () => view('dinkes.index', [
     'dinkes' => PegawaiDinkes::latest()->get()
 ]));
 
-/*
-|--------------------------------------------------------------------------
-| UPT
-|--------------------------------------------------------------------------
-*/
 Route::get('/upt', fn () => view('upt.index', [
     'upt' => PegawaiUPT::latest()->get()
 ]));
 
-/*
-|--------------------------------------------------------------------------
-| CUTI
-|--------------------------------------------------------------------------
-*/
 Route::get('/cuti', fn () => view('cuti.index', [
     'cuti' => PengajuanCuti::latest()->get()
 ]));
 
-/*
-|--------------------------------------------------------------------------
-| KALENDER
-|--------------------------------------------------------------------------
-*/
 Route::get('/kalender', fn () => view('kalender.index', [
     'events' => KalenderDinasLuar::latest()->get()
 ]));
@@ -213,6 +245,7 @@ Route::get('/kalender', fn () => view('kalender.index', [
 | REKAPITULASI
 |--------------------------------------------------------------------------
 */
+
 Route::get('/rekapitulasi', function () {
 
     $dinkes = PegawaiDinkes::all();
@@ -247,11 +280,6 @@ Route::get('/rekapitulasi', function () {
     return view('rekap.index', compact('data'));
 });
 
-/*
-|--------------------------------------------------------------------------
-| ALIAS REKAP
-|--------------------------------------------------------------------------
-*/
 Route::get('/rekap', fn () => redirect('/rekapitulasi'));
 
 /*
@@ -259,13 +287,10 @@ Route::get('/rekap', fn () => redirect('/rekapitulasi'));
 | EXPORT
 |--------------------------------------------------------------------------
 */
+
 Route::get('/export', fn () => view('export.index'));
 
-/*
-|--------------------------------------------------------------------------
-| EXPORT PEGAWAI
-|--------------------------------------------------------------------------
-*/
+/* PEGAWAI EXPORT */
 Route::get('/export/pegawai/excel', function () {
     return Excel::download(new ArrayExport(PegawaiDinkes::all()->toArray()), 'pegawai.xlsx');
 });
@@ -273,7 +298,7 @@ Route::get('/export/pegawai/excel', function () {
 Route::get('/export/pegawai/pdf', function () {
 
     $html = '<h2>DATA PEGAWAI</h2><table border="1" width="100%" cellpadding="8">
-    <tr><th>Nama</th><th>Email</th><th>Role</th></tr>';
+    <tr><th>Username</th><th>Email</th><th>Role</th></tr>';
 
     foreach (PegawaiDinkes::all() as $d) {
         $html .= "<tr><td>{$d->username}</td><td>{$d->email}</td><td>{$d->role}</td></tr>";
@@ -284,11 +309,7 @@ Route::get('/export/pegawai/pdf', function () {
     return Pdf::loadHTML($html)->download('pegawai.pdf');
 });
 
-/*
-|--------------------------------------------------------------------------
-| EXPORT CUTI
-|--------------------------------------------------------------------------
-*/
+/* CUTI EXPORT */
 Route::get('/export/cuti/excel', function () {
     return Excel::download(new ArrayExport(PengajuanCuti::all()->toArray()), 'cuti.xlsx');
 });
@@ -296,7 +317,7 @@ Route::get('/export/cuti/excel', function () {
 Route::get('/export/cuti/pdf', function () {
 
     $html = '<h2>DATA CUTI</h2><table border="1" width="100%" cellpadding="8">
-    <tr><th>Nama</th><th>Jenis Cuti</th><th>Status</th></tr>';
+    <tr><th>Nama</th><th>Jenis</th><th>Status</th></tr>';
 
     foreach (PengajuanCuti::all() as $d) {
         $html .= "<tr><td>{$d->nama}</td><td>{$d->jenis_cuti}</td><td>{$d->status_pengajuan}</td></tr>";
@@ -307,11 +328,7 @@ Route::get('/export/cuti/pdf', function () {
     return Pdf::loadHTML($html)->download('cuti.pdf');
 });
 
-/*
-|--------------------------------------------------------------------------
-| EXPORT KALENDER
-|--------------------------------------------------------------------------
-*/
+/* KALENDER EXPORT */
 Route::get('/export/kalender/excel', function () {
     return Excel::download(new ArrayExport(KalenderDinasLuar::all()->toArray()), 'kalender.xlsx');
 });
@@ -330,11 +347,7 @@ Route::get('/export/kalender/pdf', function () {
     return Pdf::loadHTML($html)->download('kalender.pdf');
 });
 
-/*
-|--------------------------------------------------------------------------
-| EXPORT REKAP
-|--------------------------------------------------------------------------
-*/
+/* REKAP EXPORT */
 Route::get('/export/rekap/excel', function () {
 
     $data = [
@@ -349,11 +362,12 @@ Route::get('/export/rekap/excel', function () {
 
 Route::get('/export/rekap/pdf', function () {
 
-    $html = '<h2>REKAP SISTEM</h2><ul>
-    <li>Dinkes: '.PegawaiDinkes::count().'</li>
-    <li>UPT: '.PegawaiUPT::count().'</li>
-    <li>Cuti: '.PengajuanCuti::count().'</li>
-    <li>Kalender: '.KalenderDinasLuar::count().'</li>
+    $html = '<h2>REKAP SISTEM</h2>
+    <ul>
+        <li>Dinkes: '.PegawaiDinkes::count().'</li>
+        <li>UPT: '.PegawaiUPT::count().'</li>
+        <li>Cuti: '.PengajuanCuti::count().'</li>
+        <li>Kalender: '.KalenderDinasLuar::count().'</li>
     </ul>';
 
     return Pdf::loadHTML($html)->download('rekap.pdf');
