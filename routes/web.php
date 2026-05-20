@@ -37,27 +37,20 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| LOGIN
+| LOGIN (BYPASS LANGSUNG KE DASHBOARD)
 |--------------------------------------------------------------------------
 */
 
 Route::get('/login', fn () => view('auth.login'));
 
 Route::post('/login', function (Request $request) {
+    session([
+        'login' => true,
+        'user' => $request->username ?? 'Super Admin',
+        'role' => 'superadmin'
+    ]);
 
-    $user = UserManagement::where('username', $request->username)->first();
-
-    if ($user && password_verify($request->password, $user->password)) {
-        session([
-            'login' => true,
-            'user' => $user->username,
-            'role' => $user->role
-        ]);
-
-        return redirect('/dashboard');
-    }
-
-    return back()->with('error', 'Login gagal');
+    return redirect('/dashboard');
 });
 
 /*
@@ -129,19 +122,13 @@ Route::get('/dashboard', function () {
 
 /*
 |--------------------------------------------------------------------------
-| USERS
+| USERS MANAGEMENT
 |--------------------------------------------------------------------------
 */
 
 Route::get('/users', fn () => view('users.index', [
     'users' => UserManagement::latest()->get()
 ]));
-
-/*
-|--------------------------------------------------------------------------
-| USERS STORE (FIXED NAME ERROR)
-|--------------------------------------------------------------------------
-*/
 
 Route::post('/users', function (Request $request) {
 
@@ -152,7 +139,7 @@ Route::post('/users', function (Request $request) {
     ]);
 
     UserManagement::create([
-        'name' => $request->username, // FIX WAJIB
+        'name' => $request->username, 
         'username' => $request->username,
         'email' => $request->email,
         'password' => bcrypt('123456'),
@@ -161,12 +148,6 @@ Route::post('/users', function (Request $request) {
 
     return redirect('/users')->with('success', 'User berhasil ditambahkan');
 })->name('users.store');
-
-/*
-|--------------------------------------------------------------------------
-| DELETE USER
-|--------------------------------------------------------------------------
-*/
 
 Route::delete('/users/delete/{id}', function ($id) {
 
@@ -220,25 +201,107 @@ Route::delete('/profil', function () {
 
 /*
 |--------------------------------------------------------------------------
-| DATA LIST
+| DATA MANAGEMENT (STORE, UPDATE, DELETE)
 |--------------------------------------------------------------------------
 */
 
+// ==========================================
+// 1. DATA DINAS KESEHATAN
+// ==========================================
 Route::get('/dinkes', fn () => view('dinkes.index', [
     'dinkes' => PegawaiDinkes::latest()->get()
 ]));
 
+Route::post('/data-dinkes/store', function (Request $request) {
+    PegawaiDinkes::create($request->all());
+    return redirect('/dinkes')->with('success', 'Data Pegawai Dinkes berhasil disimpan');
+})->name('dinkes.store');
+
+Route::put('/data-dinkes/update/{id}', function (Request $request, $id) {
+    $pegawai = PegawaiDinkes::findOrFail($id);
+    $pegawai->update($request->all());
+    return redirect('/dinkes')->with('success', 'Data Pegawai Dinkes berhasil diperbarui');
+})->name('dinkes.update');
+
+Route::delete('/data-dinkes/delete/{id}', function ($id) {
+    $pegawai = PegawaiDinkes::findOrFail($id);
+    $pegawai->delete();
+    return redirect('/dinkes')->with('success', 'Data Pegawai Dinkes berhasil dihapus');
+})->name('dinkes.destroy');
+
+
+// ==========================================
+// 2. DATA 4 UPT
+// ==========================================
 Route::get('/upt', fn () => view('upt.index', [
     'upt' => PegawaiUPT::latest()->get()
 ]));
 
+Route::post('/upt/store', function (Request $request) {
+    PegawaiUPT::create($request->all());
+    return redirect('/upt')->with('success', 'Data Pegawai UPT berhasil disimpan');
+})->name('upt.store');
+
+Route::put('/upt/update/{id}', function (Request $request, $id) {
+    $upt = PegawaiUPT::findOrFail($id);
+    $upt->update($request->all());
+    return redirect('/upt')->with('success', 'Data Pegawai UPT berhasil diperbarui');
+})->name('upt.update');
+
+Route::delete('/upt/delete/{id}', function ($id) {
+    $upt = PegawaiUPT::findOrFail($id);
+    $upt->delete();
+    return redirect('/upt')->with('success', 'Data Pegawai UPT berhasil dihapus');
+})->name('upt.destroy');
+
+
+// ==========================================
+// 3. DATA CUTI
+// ==========================================
 Route::get('/cuti', fn () => view('cuti.index', [
     'cuti' => PengajuanCuti::latest()->get()
 ]));
 
+
+// ==========================================
+// 4. KALENDER DINAS LUAR (LENGKAP: STORE, UPDATE, DELETE)
+// ==========================================
 Route::get('/kalender', fn () => view('kalender.index', [
-    'events' => KalenderDinasLuar::latest()->get()
+    'events' => KalenderDinasLuar::latest()->get() // Memastikan data tampil di kalender/tabel view
 ]));
+
+// Simpan Kalender
+Route::post('/kalender/store', function (Request $request) {
+    $data = $request->all();
+    
+    if ($request->has('tanggal')) {
+        $data['tanggal_dinas'] = $request->input('tanggal');
+    }
+
+    KalenderDinasLuar::create($data);
+    return redirect('/kalender')->with('success', 'Agenda Dinas Luar berhasil disimpan');
+})->name('kalender.store');
+
+// Update / Edit Kalender 
+Route::put('/kalender/update/{id}', function (Request $request, $id) {
+    $event = KalenderDinasLuar::findOrFail($id);
+    $data = $request->all();
+
+    if ($request->has('tanggal')) {
+        $data['tanggal_dinas'] = $request->input('tanggal');
+    }
+
+    $event->update($data);
+    return redirect('/kalender')->with('success', 'Agenda Dinas Luar berhasil diperbarui');
+})->name('kalender.update');
+
+// Hapus Kalender
+Route::delete('/kalender/delete/{id}', function ($id) {
+    $event = KalenderDinasLuar::findOrFail($id);
+    $event->delete();
+    return redirect('/kalender')->with('success', 'Agenda Dinas Luar berhasil dihapus');
+})->name('kalender.destroy');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -284,7 +347,7 @@ Route::get('/rekap', fn () => redirect('/rekapitulasi'));
 
 /*
 |--------------------------------------------------------------------------
-| EXPORT
+| EXPORT SYSTEM
 |--------------------------------------------------------------------------
 */
 
