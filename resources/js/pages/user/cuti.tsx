@@ -21,7 +21,31 @@ interface UserCutiProps {
 
 export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: UserCutiProps) {
     const [showPanduan, setShowPanduan] = useState(false);
-    const [localSisaCuti, setLocalSisaCuti] = useState(sisaCuti); // Maksimal 24 Hari
+    
+    // Persist localSisaCuti across refreshes
+    const [localSisaCuti, setLocalSisaCuti] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('localSisaCuti');
+            return saved !== null ? parseInt(saved, 10) : sisaCuti;
+        }
+        return sisaCuti;
+    });
+    
+    // Persist localRiwayatCuti across refreshes
+    const [localRiwayat, setLocalRiwayat] = useState<RiwayatCuti[]>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('localRiwayatCuti');
+            if (saved !== null) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    return riwayatCuti;
+                }
+            }
+        }
+        return riwayatCuti;
+    });
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Form handling using Inertia useForm
@@ -62,9 +86,43 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
             return;
         }
 
-        setLocalSisaCuti(prev => prev - potong);
+        // Validation for bukti_pengajuan (wajib selain cuti tahunan)
+        if (data.jenis_cuti !== 'Tahunan' && !data.bukti_pengajuan) {
+            toast.error('Bukti pengajuan wajib diunggah untuk jenis cuti ini!');
+            return;
+        }
+
+        // Update sisa cuti and save to localStorage
+        setLocalSisaCuti(prev => {
+            const newVal = prev - potong;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('localSisaCuti', newVal.toString());
+            }
+            return newVal;
+        });
+
+        // Add submitted leave to history and save to localStorage
+        const newRecord: RiwayatCuti = {
+            jenis_cuti: data.jenis_cuti === 'Tahunan' ? 'Cuti Tahunan' : `Cuti ${data.jenis_cuti}`,
+            tanggal_mulai: data.tanggal_mulai,
+            tanggal_selesai: data.tanggal_selesai,
+            status: 'Menunggu',
+            alasan: data.alasan,
+        };
+
+        setLocalRiwayat(prev => {
+            const newHistory = [newRecord, ...prev];
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('localRiwayatCuti', JSON.stringify(newHistory));
+            }
+            return newHistory;
+        });
         
-        toast.success(`Pengajuan cuti berhasil! Jatah cuti dipotong ${potong} hari kerja.`);
+        const successMsg = data.jenis_cuti === 'Tahunan' 
+            ? `Pengajuan cuti berhasil! Jatah cuti dipotong ${potong} hari kerja.`
+            : `Pengajuan ${data.jenis_cuti} berhasil dikirim!`;
+        
+        toast.success(successMsg);
         reset();
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -106,9 +164,11 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
                     <div className="md:col-span-1 bg-white text-gray-800 p-6 rounded-lg shadow h-fit">
                         <div className="flex justify-between items-center border-b pb-2 mb-4">
                             <h2 className="text-lg font-bold text-primary">FORM PENGAJUAN</h2>
-                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                                Sisa: {localSisaCuti} Hari
-                            </span>
+                            {data.jenis_cuti === 'Tahunan' && (
+                                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                                    Sisa: {localSisaCuti} Hari
+                                </span>
+                            )}
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -162,7 +222,9 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold mb-1 text-gray-700">Bukti Pengajuan (Opsional)</label>
+                                <label className="block text-sm font-semibold mb-1 text-gray-700">
+                                    Bukti Pengajuan {data.jenis_cuti === 'Tahunan' ? '(Opsional)' : '(Wajib)'}
+                                </label>
                                 <div className="flex items-center gap-2">
                                     <input
                                         type="file"
@@ -170,6 +232,7 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
                                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                                         onChange={(e) => setData('bukti_pengajuan', e.target.files && e.target.files.length > 0 ? e.target.files[0] : null)}
                                         accept=".pdf,.jpg,.jpeg,.png"
+                                        required={data.jenis_cuti !== 'Tahunan'}
                                     />
                                     {data.bukti_pengajuan && (
                                         <button
@@ -203,7 +266,7 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
                     <div className="md:col-span-2 bg-white text-gray-800 p-6 rounded-lg shadow">
                         <h2 className="text-lg font-bold border-b pb-2 mb-4 text-primary">RIWAYAT CUTI SAYA</h2>
 
-                        {riwayatCuti.length === 0 ? (
+                        {localRiwayat.length === 0 ? (
                             <div className="text-center py-10">
                                 <p className="text-gray-500 italic">Belum ada riwayat pengajuan cuti.</p>
                             </div>
@@ -219,7 +282,7 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {riwayatCuti.map((cuti, idx) => (
+                                        {localRiwayat.map((cuti, idx) => (
                                             <tr key={idx} className="border-b last:border-0 hover:bg-gray-50">
                                                 <td className="px-4 py-3 font-semibold">{cuti.jenis_cuti}</td>
                                                 <td className="px-4 py-3 text-gray-600">

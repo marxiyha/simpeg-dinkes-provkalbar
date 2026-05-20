@@ -14,19 +14,45 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            UnitKerjaSeeder::class,
+        ]);
 
         User::factory()->create([
-            'name' => 'Admin Dinkes',
-            'email' => 'admin@dinkes.kalbar.go.id',
+            'name' => 'Operator Dinkes',
+            'email' => 'Operator@dinkes.kalbar.go.id',
             'password' => Hash::make('password123'),
-            //admin
+            'role' => 'operator',
+            'nip' => '198803152015031001',
+            'id_unit' => 1,
+            'tanggal_lahir' => '1988-03-15',
+            'jenis_kelamin' => 'Laki-laki',
+            'pendidikan_terakhir' => 'S1 Sistem Informasi',
+            'jabatan' => 'Pelaksana / Staf',
+            'status_pegawai' => 'PNS',
+            'tmt_pegawai' => '2015-03-01',
+            'batas_usia_pensiun' => 58,
+            'tmt_pensiun' => '2046-04-01',
+            'perkiraan_naik_jabatan' => '2019, 2023, 2027',
+            'perkiraan_naik_gaji' => '2017, 2019, 2021, 2023, 2025, 2027, 2029',
         ]);
-         User::factory()->create([
+        User::factory()->create([
             'name' => 'Pegawai Dinkes',
             'email' => 'pegawai@dinkes.kalbar.go.id',
             'password' => Hash::make('password123'),
-            //user
+            'role' => 'pegawai',
+            'nip' => '199508122020121002',
+            'id_unit' => 1,
+            'tanggal_lahir' => '1995-08-12',
+            'jenis_kelamin' => 'Laki-laki',
+            'pendidikan_terakhir' => 'S1 Kesehatan Masyarakat',
+            'jabatan' => 'Pelaksana / Staf',
+            'status_pegawai' => 'PNS',
+            'tmt_pegawai' => '2020-12-01',
+            'batas_usia_pensiun' => 58,
+            'tmt_pensiun' => '2053-09-01',
+            'perkiraan_naik_jabatan' => '2024, 2028',
+            'perkiraan_naik_gaji' => '2022, 2024, 2026, 2028',
         ]);
     }
 }
