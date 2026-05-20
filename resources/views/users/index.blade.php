@@ -7,7 +7,7 @@
         Manajemen User
     </h1>
     <p class="text-gray-500">
-        Kelola user (Admin / Petinggi / Pegawai)
+        Kelola user (Admin / Petinggi / Pegawai / Operator)
     </p>
 </div>
 
@@ -27,7 +27,6 @@
 
     <form method="POST" action="{{ route('users.store') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         @csrf
-
 
         {{-- USERNAME --}}
         <div class="flex flex-col">
@@ -53,9 +52,7 @@
             @error('email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
         </div>
 
-       
-
-        {{-- HAK AKSES / ROLE (DISESUAIKAN DENGAN ENUM DATABASE) --}}
+        {{-- HAK AKSES / ROLE (SUDAH DIPERBAIKI) --}}
         <div class="flex flex-col">
             <label class="text-gray-600 mb-1 text-sm">Hak Akses / Role</label>
             <select name="role"
@@ -65,10 +62,10 @@
                 <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
                 <option value="Petinggi" {{ old('role') == 'Petinggi' ? 'selected' : '' }}>Petinggi</option>
                 <option value="Pegawai" {{ old('role') == 'Pegawai' ? 'selected' : '' }}>Pegawai</option>
+                <option value="Operator" {{ old('role') == 'Operator' ? 'selected' : '' }}>Operator</option>
             </select>
             @error('role') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
         </div>
-
 
         <div class="md:col-span-2 mt-2">
             <button type="submit"

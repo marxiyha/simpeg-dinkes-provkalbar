@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,17 +38,34 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| LOGIN (BYPASS LANGSUNG KE DASHBOARD)
+| LOGIN (BYPASS LANGSUNG KE DASHBOARD DENGAN AUTH LARAVEL)
 |--------------------------------------------------------------------------
 */
 
 Route::get('/login', fn () => view('auth.login'));
 
 Route::post('/login', function (Request $request) {
+    // Ambil user pertama dari database untuk bypass login
+    $user = UserManagement::first();
+
+    // Jika belum ada user sama sekali di database, buatkan satu akun default
+    if (!$user) {
+        $user = UserManagement::create([
+            'name' => 'Petinggi Admin',
+            'username' => 'petinggi',
+            'email' => 'petinggi@gmail.com',
+            'password' => bcrypt('123456'),
+            'role' => 'petinggi'
+        ]);
+    }
+
+    // Login menggunakan sistem Auth bawaan Laravel agar session terikat sempurna
+    Auth::login($user);
+
     session([
         'login' => true,
-        'user' => $request->username ?? 'Super Admin',
-        'role' => 'superadmin'
+        'user' => $user->username,
+        'role' => strtolower($user->role)
     ]);
 
     return redirect('/dashboard');
@@ -60,6 +78,7 @@ Route::post('/login', function (Request $request) {
 */
 
 Route::match(['get', 'post'], '/logout', function () {
+    Auth::logout();
     session()->flush();
     return redirect('/login');
 })->name('logout');
@@ -80,7 +99,7 @@ Route::post('/register', function (Request $request) {
         'password' => 'required|min:6|confirmed'
     ]);
 
-    UserManagement::create([
+    $user = UserManagement::create([
         'name' => $request->username,
         'username' => $request->username,
         'email' => $request->email,
@@ -88,7 +107,15 @@ Route::post('/register', function (Request $request) {
         'role' => 'pegawai'
     ]);
 
-    return redirect('/login')->with('success', 'Register berhasil');
+    Auth::login($user);
+
+    session([
+        'login' => true,
+        'user' => $user->username,
+        'role' => 'pegawai'
+    ]);
+
+    return redirect('/dashboard')->with('success', 'Register berhasil');
 });
 
 /*
@@ -122,7 +149,7 @@ Route::get('/dashboard', function () {
 
 /*
 |--------------------------------------------------------------------------
-| USERS MANAGEMENT
+| USERS MANAGEMENT (MENDUKUNG ROLE OPERATOR SETELAH ALTER ENUM)
 |--------------------------------------------------------------------------
 */
 
@@ -133,20 +160,23 @@ Route::get('/users', fn () => view('users.index', [
 Route::post('/users', function (Request $request) {
 
     $request->validate([
-        'username' => 'required',
-        'email' => 'required|email',
+        'username' => 'required|unique:users,username',
+        'email' => 'required|email|unique:users,email',
         'role' => 'required'
     ]);
+
+    // Mengubah input "Operator" menjadi "operator" agar sesuai dengan struktur ENUM database
+    $cleanRole = strtolower($request->role);
 
     UserManagement::create([
         'name' => $request->username, 
         'username' => $request->username,
         'email' => $request->email,
-        'password' => bcrypt('123456'),
-        'role' => $request->role
+        'password' => bcrypt('123456'), // Password default
+        'role' => $cleanRole
     ]);
 
-    return redirect('/users')->with('success', 'User berhasil ditambahkan');
+    return redirect('/users')->with('success', 'User berhasil ditambahkan dengan role ' . $request->role);
 })->name('users.store');
 
 Route::delete('/users/delete/{id}', function ($id) {
@@ -194,6 +224,7 @@ Route::delete('/profil', function () {
 
     if ($user) $user->delete();
 
+    Auth::logout();
     session()->flush();
 
     return redirect('/login');
@@ -264,13 +295,12 @@ Route::get('/cuti', fn () => view('cuti.index', [
 
 
 // ==========================================
-// 4. KALENDER DINAS LUAR (LENGKAP: STORE, UPDATE, DELETE)
+// 4. KALENDER DINAS LUAR
 // ==========================================
 Route::get('/kalender', fn () => view('kalender.index', [
-    'events' => KalenderDinasLuar::latest()->get() // Memastikan data tampil di kalender/tabel view
+    'events' => KalenderDinasLuar::latest()->get()
 ]));
 
-// Simpan Kalender
 Route::post('/kalender/store', function (Request $request) {
     $data = $request->all();
     
@@ -282,7 +312,6 @@ Route::post('/kalender/store', function (Request $request) {
     return redirect('/kalender')->with('success', 'Agenda Dinas Luar berhasil disimpan');
 })->name('kalender.store');
 
-// Update / Edit Kalender 
 Route::put('/kalender/update/{id}', function (Request $request, $id) {
     $event = KalenderDinasLuar::findOrFail($id);
     $data = $request->all();
@@ -295,7 +324,6 @@ Route::put('/kalender/update/{id}', function (Request $request, $id) {
     return redirect('/kalender')->with('success', 'Agenda Dinas Luar berhasil diperbarui');
 })->name('kalender.update');
 
-// Hapus Kalender
 Route::delete('/kalender/delete/{id}', function ($id) {
     $event = KalenderDinasLuar::findOrFail($id);
     $event->delete();
