@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\UnitKerja;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Response;
 
 class PegawaiController extends Controller
 {
@@ -19,12 +18,16 @@ class PegawaiController extends Controller
 
         return Inertia::render('user/pegawai', [
             'users' => $users,
-            'unitKerjas' => $unitKerjas
+            'unitKerjas' => $unitKerjas,
         ]);
     }
 
     public function store(Request $request)
     {
+        if ($request->user()->role === 'pegawai') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -51,6 +54,10 @@ class PegawaiController extends Controller
 
     public function update(Request $request, User $pegawai)
     {
+        if ($request->user()->role === 'pegawai') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($pegawai->id)],
@@ -73,8 +80,12 @@ class PegawaiController extends Controller
         return redirect()->back()->with('success', 'Pegawai updated successfully.');
     }
 
-    public function destroy(User $pegawai)
+    public function destroy(Request $request, User $pegawai)
     {
+        if ($request->user()->role === 'pegawai') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $pegawai->delete();
 
         return redirect()->back()->with('success', 'Pegawai deleted successfully.');
@@ -83,15 +94,15 @@ class PegawaiController extends Controller
     public function exportCsv()
     {
         $pegawais = User::with('unitKerja')->get();
-        $filename = "data_pegawai.csv";
+        $filename = 'data_pegawai.csv';
         $handle = fopen('php://output', 'w');
-        
+
         // Output headers so that the file is downloaded rather than displayed
-        header("Content-Type: text/csv");
+        header('Content-Type: text/csv');
         header("Content-Disposition: attachment; filename=\"$filename\"");
-        
+
         fputcsv($handle, [
-            'Nama', 'Email', 'NIP', 'Unit Kerja', 'Jabatan', 'Status Pegawai', 'Jenis Kelamin', 'Tanggal Lahir'
+            'Nama', 'Email', 'NIP', 'Unit Kerja', 'Jabatan', 'Status Pegawai', 'Jenis Kelamin', 'Tanggal Lahir',
         ]);
 
         foreach ($pegawais as $row) {
@@ -103,31 +114,35 @@ class PegawaiController extends Controller
                 $row->jabatan,
                 $row->status_pegawai,
                 $row->jenis_kelamin,
-                $row->tanggal_lahir ? $row->tanggal_lahir->format('Y-m-d') : ''
+                $row->tanggal_lahir ? $row->tanggal_lahir->format('Y-m-d') : '',
             ]);
         }
-        
+
         fclose($handle);
         exit;
     }
 
     public function importCsv(Request $request)
     {
+        if ($request->user()->role === 'pegawai') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
-            'file' => 'required|mimes:csv,txt|max:2048'
+            'file' => 'required|mimes:csv,txt|max:2048',
         ]);
 
         $file = $request->file('file');
-        if (($handle = fopen($file->getRealPath(), "r")) !== FALSE) {
+        if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
             // Skip the header row
-            fgetcsv($handle, 1000, ",");
-            
-            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            fgetcsv($handle, 1000, ',');
+
+            while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 // Name, Email, NIP, Unit Kerja (ID), Jabatan, Status Pegawai, Jenis Kelamin, Tanggal Lahir
                 if (count($data) >= 2) {
                     $email = $data[1];
                     $user = User::where('email', $email)->first();
-                    if (!$user) {
+                    if (! $user) {
                         User::create([
                             'name' => $data[0],
                             'email' => $email,

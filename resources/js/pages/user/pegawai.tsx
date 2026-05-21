@@ -91,6 +91,7 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
     // Data dari auth (Inertia mengirim data user yang sedang login)
     // Cast to any to handle custom mockup fields safely for now
     const pegawai: any = auth.user;
+    const isPegawaiRole = pegawai?.role === 'pegawai';
 
     const namaPegawai = pegawai.nama || pegawai.name || 'Pegawai';
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } = useForm({
@@ -334,13 +335,15 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                             DAFTAR PEGAWAI
                         </h2>
                         <div className="flex gap-2 flex-wrap">
-                            <button
-                                onClick={() => setIsImportModalOpen(true)}
-                                className="bg-white border border-green-600 text-green-700 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition flex items-center gap-2 font-bold"
-                            >
-                                <Upload className="w-4 h-4" />
-                                Import
-                            </button>
+                            {!isPegawaiRole && (
+                                <button
+                                    onClick={() => setIsImportModalOpen(true)}
+                                    className="bg-white border border-green-600 text-green-700 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition flex items-center gap-2 font-bold"
+                                >
+                                    <Upload className="w-4 h-4" />
+                                    Import
+                                </button>
+                            )}
                             <a
                                 href="/pegawai/export"
                                 className="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-amber-600 transition flex items-center gap-2 font-bold"
@@ -348,13 +351,15 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                 <Download className="w-4 h-4" />
                                 Export CSV
                             </a>
-                            <button
-                                onClick={() => openModal()}
-                                className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition flex items-center gap-2 font-bold"
-                            >
-                                <Plus className="w-4 h-4" />
-                                Tambah Data Pegawai
-                            </button>
+                            {!isPegawaiRole && (
+                                <button
+                                    onClick={() => openModal()}
+                                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition flex items-center gap-2 font-bold"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Tambah Data Pegawai
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -407,13 +412,13 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                     <th className="px-4 py-3.5 font-semibold whitespace-nowrap">Status & TMT</th>
                                     <th className="px-4 py-3.5 font-semibold whitespace-nowrap">Naik Gaji (2026-29)</th>
                                     <th className="px-4 py-3.5 font-semibold whitespace-nowrap">Naik Jabatan (2026-29)</th>
-                                    <th className="px-4 py-3.5 font-semibold text-right whitespace-nowrap">Aksi</th>
+                                    {!isPegawaiRole && <th className="px-4 py-3.5 font-semibold text-right whitespace-nowrap">Aksi</th>}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 text-gray-700">
                                 {filteredUsers.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="text-center py-16 bg-gray-50 rounded-lg">
+                                        <td colSpan={isPegawaiRole ? 6 : 7} className="text-center py-16 bg-gray-50 rounded-lg">
                                             <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                                             <p className="text-gray-500 font-medium">Belum ada data pegawai.</p>
                                         </td>
@@ -452,37 +457,39 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                             <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                                                 {user.perkiraan_naik_jabatan || '-'}
                                             </td>
-                                            <td className="px-4 py-4 text-right whitespace-nowrap">
-                                                <div className="flex justify-end gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedUserForView(user);
-                                                            setIsViewModalOpen(true);
-                                                        }}
-                                                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition"
-                                                        title="Lihat Detail"
-                                                    >
-                                                        <Eye className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => openModal(user)}
-                                                        className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded transition"
-                                                        title="Edit"
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedUserForDelete(user);
-                                                            setIsDeleteModalOpen(true);
-                                                        }}
-                                                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition"
-                                                        title="Hapus"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
+                                            {!isPegawaiRole && (
+                                                <td className="px-4 py-4 text-right whitespace-nowrap">
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUserForView(user);
+                                                                setIsViewModalOpen(true);
+                                                            }}
+                                                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                                                            title="Lihat Detail"
+                                                        >
+                                                            <Eye className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => openModal(user)}
+                                                            className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded transition"
+                                                            title="Edit"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUserForDelete(user);
+                                                                setIsDeleteModalOpen(true);
+                                                            }}
+                                                            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition"
+                                                            title="Hapus"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))
                                 )}
