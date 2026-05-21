@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Auth } from '@/types';
-import { Plus, Edit, Trash2, X, Download, Upload, Users, Info } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Download, Upload, Users, Info, Eye, Briefcase, Building, Calendar, GraduationCap, User as UserIcon, Mail, Clock, TrendingUp, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface User {
@@ -42,7 +42,51 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
     const [showPanduan, setShowPanduan] = useState(false);
     const [filterText, setFilterText] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
+    const [filterUnit, setFilterUnit] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [selectedUserForView, setSelectedUserForView] = useState<User | null>(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedUserForDelete, setSelectedUserForDelete] = useState<User | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return 'Belum Diisi';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
+    const executeDelete = () => {
+        if (!selectedUserForDelete) return;
+
+        if (selectedUserForDelete.id === auth.user.id) {
+            toast.error('Anda tidak dapat menghapus akun Anda sendiri yang sedang digunakan untuk login!');
+            setIsDeleteModalOpen(false);
+            setSelectedUserForDelete(null);
+            return;
+        }
+
+        destroy(`/pegawai/${selectedUserForDelete.id}`, {
+            onSuccess: () => {
+                toast.success('Data pegawai berhasil dihapus!');
+                setIsDeleteModalOpen(false);
+                setSelectedUserForDelete(null);
+            },
+            onError: () => {
+                toast.error('Gagal menghapus data pegawai!');
+                setIsDeleteModalOpen(false);
+                setSelectedUserForDelete(null);
+            },
+        });
+    };
 
     // Data dari auth (Inertia mengirim data user yang sedang login)
     // Cast to any to handle custom mockup fields safely for now
@@ -255,7 +299,8 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
             (user.jabatan && user.jabatan.toLowerCase().includes(filterText.toLowerCase())) ||
             (user.unit_kerja?.nama_unit && user.unit_kerja.nama_unit.toLowerCase().includes(filterText.toLowerCase()));
         const matchStatus = !filterStatus || user.status_pegawai === filterStatus;
-        return matchText && matchStatus;
+        const matchUnit = !filterUnit || String((user as any).id_unit) === filterUnit;
+        return matchText && matchStatus && matchUnit;
     });
 
     return (
@@ -280,7 +325,7 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
             </div>
 
             {/* KONTEN UTAMA */}
-            <div className="max-w-7xl mx-auto mt-6 space-y-6 px-4">
+            <div className="max-w-full xl:max-w-[92rem] mx-auto mt-6 space-y-6 px-4">
 
                 <div className="bg-white p-6 rounded-lg shadow h-fit border-t-4 border-green-700">
                     <div className="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4 gap-4">
@@ -325,7 +370,20 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                 onChange={(e) => setFilterText(e.target.value)}
                             />
                         </div>
-                        <div className="md:w-56">
+                        <div className="md:w-72">
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Filter Unit Kerja</label>
+                            <select
+                                className="w-full border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 text-base py-2.5 px-3 bg-white text-gray-800"
+                                value={filterUnit}
+                                onChange={(e) => setFilterUnit(e.target.value)}
+                            >
+                                <option value="">Semua Unit Kerja</option>
+                                {unitKerjas && unitKerjas.map(unit => (
+                                    <option key={unit.id_unit} value={String(unit.id_unit)}>{unit.nama_unit}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="md:w-48">
                             <label className="block text-sm font-bold text-gray-700 mb-1">Filter Status</label>
                             <select
                                 className="w-full border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 text-base py-2.5 px-3 bg-white text-gray-800"
@@ -340,16 +398,16 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                     </div>
 
                     <div className="overflow-x-auto rounded-lg border border-gray-200">
-                        <table className="w-full text-sm text-left whitespace-nowrap">
+                        <table className="w-full text-sm text-left">
                             <thead className="bg-green-50 text-green-800 border-b border-green-200">
                                 <tr>
-                                    <th className="px-4 py-3.5 font-semibold">Nama / NIP</th>
-                                    <th className="px-4 py-3.5 font-semibold">Unit Kerja</th>
-                                    <th className="px-4 py-3.5 font-semibold">Jabatan</th>
-                                    <th className="px-4 py-3.5 font-semibold">Status & TMT</th>
-                                    <th className="px-4 py-3.5 font-semibold">Naik Gaji (2026-29)</th>
-                                    <th className="px-4 py-3.5 font-semibold">Naik Jabatan (2026-29)</th>
-                                    <th className="px-4 py-3.5 font-semibold text-right">Aksi</th>
+                                    <th className="px-4 py-3.5 font-semibold min-w-[180px]">Nama / NIP</th>
+                                    <th className="px-4 py-3.5 font-semibold min-w-[200px]">Unit Kerja</th>
+                                    <th className="px-4 py-3.5 font-semibold min-w-[180px]">Jabatan</th>
+                                    <th className="px-4 py-3.5 font-semibold whitespace-nowrap">Status & TMT</th>
+                                    <th className="px-4 py-3.5 font-semibold whitespace-nowrap">Naik Gaji (2026-29)</th>
+                                    <th className="px-4 py-3.5 font-semibold whitespace-nowrap">Naik Jabatan (2026-29)</th>
+                                    <th className="px-4 py-3.5 font-semibold text-right whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 text-gray-700">
@@ -363,17 +421,17 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                 ) : (
                                     filteredUsers.map((user) => (
                                         <tr key={user.id} className="hover:bg-green-50/50 transition-colors">
-                                            <td className="px-4 py-4 text-gray-800">
+                                            <td className="px-4 py-4 text-gray-800 whitespace-normal">
                                                 <div className="font-bold">{user.name}</div>
                                                 <div className="text-xs text-gray-500">{user.nip || 'NIP Belum Diisi'}</div>
                                             </td>
-                                            <td className="px-4 py-4 text-gray-600">
+                                            <td className="px-4 py-4 text-gray-600 whitespace-normal">
                                                 {user.unit_kerja?.nama_unit || '-'}
                                             </td>
-                                            <td className="px-4 py-4 text-gray-600">
+                                            <td className="px-4 py-4 text-gray-600 whitespace-normal">
                                                 {user.jabatan || '-'}
                                             </td>
-                                            <td className="px-4 py-4">
+                                            <td className="px-4 py-4 whitespace-nowrap">
                                                 <div className="flex flex-col gap-1 items-start">
                                                     {user.status_pegawai ? (
                                                         <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${user.status_pegawai === 'PNS' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
@@ -388,14 +446,24 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-4 text-gray-600">
+                                            <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                                                 {user.perkiraan_naik_gaji || '-'}
                                             </td>
-                                            <td className="px-4 py-4 text-gray-600">
+                                            <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                                                 {user.perkiraan_naik_jabatan || '-'}
                                             </td>
-                                            <td className="px-4 py-4 text-right">
+                                            <td className="px-4 py-4 text-right whitespace-nowrap">
                                                 <div className="flex justify-end gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedUserForView(user);
+                                                            setIsViewModalOpen(true);
+                                                        }}
+                                                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                                                        title="Lihat Detail"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </button>
                                                     <button
                                                         onClick={() => openModal(user)}
                                                         className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded transition"
@@ -404,7 +472,10 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                                         <Edit className="w-4 h-4" />
                                                     </button>
                                                     <button
-                                                        onClick={() => handleDelete(user)}
+                                                        onClick={() => {
+                                                            setSelectedUserForDelete(user);
+                                                            setIsDeleteModalOpen(true);
+                                                        }}
                                                         className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition"
                                                         title="Hapus"
                                                     >
@@ -657,6 +728,227 @@ export default function UserPegawai({ auth, users, unitKerjas }: UserPegawaiProp
                                 className="bg-gray-100 text-gray-800 font-bold px-4 py-2.5 rounded-lg hover:bg-gray-200 w-full transition active:scale-95"
                             >
                                 Mengerti & Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL VIEW DETAIL PEGAWAI */}
+            {isViewModalOpen && selectedUserForView && (
+                <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center p-4 z-50 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col text-gray-800 animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-green-100 flex justify-between items-center bg-gradient-to-r from-green-50 to-emerald-50/50">
+                            <h3 className="font-bold text-lg text-green-800 flex items-center gap-2">
+                                <Eye className="w-5 h-5 text-green-600" />
+                                Detail Lengkap Pegawai
+                            </h3>
+                            <button 
+                                onClick={() => {
+                                    setIsViewModalOpen(false);
+                                    setSelectedUserForView(null);
+                                }} 
+                                className="text-green-600 hover:text-green-800 transition p-1 hover:bg-green-100 rounded-full"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6 overflow-y-auto flex-1 bg-white space-y-6">
+                            {/* Profile Header Card */}
+                            <div className="flex flex-col sm:flex-row items-center gap-5 p-5 bg-gradient-to-br from-green-50/80 via-emerald-50/30 to-white rounded-2xl border border-green-100">
+                                <div className="bg-gradient-to-tr from-green-600 to-emerald-500 text-white font-bold text-2xl w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition duration-300">
+                                    {selectedUserForView.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()}
+                                </div>
+                                <div className="text-center sm:text-left space-y-1">
+                                    <h4 className="text-xl font-bold text-gray-900">{selectedUserForView.name}</h4>
+                                    <p className="text-sm font-medium text-gray-500 flex flex-wrap justify-center sm:justify-start gap-x-3 gap-y-1">
+                                        <span className="flex items-center gap-1"><Mail className="w-4 h-4 text-green-600" /> {selectedUserForView.email}</span>
+                                        {selectedUserForView.nip && (
+                                            <span className="text-gray-300">|</span>
+                                        )}
+                                        {selectedUserForView.nip && (
+                                            <span>NIP: {selectedUserForView.nip}</span>
+                                        )}
+                                    </p>
+                                    <div className="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
+                                        {selectedUserForView.status_pegawai && (
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${
+                                                selectedUserForView.status_pegawai === 'PNS' 
+                                                    ? 'bg-green-100 text-green-800 border border-green-200' 
+                                                    : 'bg-amber-100 text-amber-800 border border-amber-200'
+                                            }`}>
+                                                {selectedUserForView.status_pegawai}
+                                            </span>
+                                        )}
+                                        {selectedUserForView.jabatan && (
+                                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 shadow-sm">
+                                                {selectedUserForView.jabatan}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Information Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Pribadi Section */}
+                                <div className="space-y-4 bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                    <h5 className="text-sm font-bold uppercase tracking-wider text-green-700 flex items-center gap-2 pb-2 border-b border-gray-200/60">
+                                        <UserIcon className="w-4 h-4" /> Informasi Pribadi
+                                    </h5>
+                                    <div className="space-y-3 text-sm">
+                                        <div className="grid grid-cols-3 py-1 border-b border-gray-100/50">
+                                            <span className="text-gray-500 font-medium col-span-1 flex items-center gap-1.5">
+                                                <Users className="w-4 h-4 text-green-600 inline" /> Jenis Kelamin
+                                            </span>
+                                            <span className="text-gray-800 font-semibold col-span-2">{selectedUserForView.jenis_kelamin || 'Belum Diisi'}</span>
+                                        </div>
+                                        <div className="grid grid-cols-3 py-1 border-b border-gray-100/50">
+                                            <span className="text-gray-500 font-medium col-span-1 flex items-center gap-1.5">
+                                                <Calendar className="w-4 h-4 text-green-600 inline" /> Tanggal Lahir
+                                            </span>
+                                            <span className="text-gray-800 font-semibold col-span-2">{formatDate(selectedUserForView.tanggal_lahir)}</span>
+                                        </div>
+                                        <div className="grid grid-cols-3 py-1">
+                                            <span className="text-gray-500 font-medium col-span-1 flex items-center gap-1.5">
+                                                <GraduationCap className="w-4 h-4 text-green-600 inline" /> Pendidikan
+                                            </span>
+                                            <span className="text-gray-800 font-semibold col-span-2">{selectedUserForView.pendidikan_terakhir || 'Belum Diisi'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Kepegawaian Section */}
+                                <div className="space-y-4 bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                    <h5 className="text-sm font-bold uppercase tracking-wider text-green-700 flex items-center gap-2 pb-2 border-b border-gray-200/60">
+                                        <Briefcase className="w-4 h-4" /> Kepegawaian
+                                    </h5>
+                                    <div className="space-y-3 text-sm">
+                                        <div className="grid grid-cols-3 py-1 border-b border-gray-100/50">
+                                            <span className="text-gray-500 font-medium col-span-1 flex items-center gap-1.5">
+                                                <Building className="w-4 h-4 text-green-600 inline" /> Unit Kerja
+                                            </span>
+                                            <span className="text-gray-800 font-semibold col-span-2">{selectedUserForView.unit_kerja?.nama_unit || 'Belum Diisi'}</span>
+                                        </div>
+                                        <div className="grid grid-cols-3 py-1 border-b border-gray-100/50">
+                                            <span className="text-gray-500 font-medium col-span-1 flex items-center gap-1.5">
+                                                <Clock className="w-4 h-4 text-green-600 inline" /> TMT Diangkat
+                                            </span>
+                                            <span className="text-gray-800 font-semibold col-span-2">{formatDate(selectedUserForView.tmt_pegawai)}</span>
+                                        </div>
+                                        <div className="grid grid-cols-3 py-1">
+                                            <span className="text-gray-500 font-medium col-span-1 flex items-center gap-1.5">
+                                                <ShieldAlert className="w-4 h-4 text-green-600 inline" /> Batas Usia
+                                            </span>
+                                            <span className="text-gray-800 font-semibold col-span-2">{selectedUserForView.batas_usia_pensiun ? `${selectedUserForView.batas_usia_pensiun} Tahun` : 'Belum Diisi'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Simulasi Pensiun & Karir Section */}
+                            <div className="bg-gradient-to-br from-amber-50/40 via-orange-50/10 to-white p-5 rounded-2xl border border-amber-100 space-y-4">
+                                <h5 className="text-sm font-bold uppercase tracking-wider text-amber-700 flex items-center gap-2 pb-2 border-b border-amber-200/60">
+                                    <TrendingUp className="w-4 h-4" /> Estimasi Kenaikan & Pensiun
+                                </h5>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm">
+                                    <div className="space-y-3 bg-white p-4 rounded-xl border border-amber-100/70 shadow-sm">
+                                        <span className="text-xs font-semibold text-amber-600 block uppercase">Masa Pensiun</span>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center text-xs text-gray-500 border-b border-gray-100 pb-1.5">
+                                                <span>TMT Pensiun:</span>
+                                                <span className="font-bold text-gray-800">{formatDate(selectedUserForView.tmt_pensiun)}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                                <span>Sisa Usia Pengabdian:</span>
+                                                <span className="font-bold text-gray-800">
+                                                    {selectedUserForView.tanggal_lahir && selectedUserForView.batas_usia_pensiun ? (() => {
+                                                        const birthYear = new Date(selectedUserForView.tanggal_lahir).getFullYear();
+                                                        const retirementYear = birthYear + selectedUserForView.batas_usia_pensiun;
+                                                        const currentYear = new Date().getFullYear();
+                                                        const yearsLeft = retirementYear - currentYear;
+                                                        return yearsLeft > 0 ? `${yearsLeft} Tahun` : 'Sudah Masuk Pensiun';
+                                                    })() : '-'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3 bg-white p-4 rounded-xl border border-amber-100/70 shadow-sm">
+                                        <span className="text-xs font-semibold text-amber-600 block uppercase">Estimasi Kenaikan Berkala</span>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center text-xs text-gray-500 border-b border-gray-100 pb-1.5">
+                                                <span>Naik Gaji (2026-29):</span>
+                                                <span className="font-bold text-gray-800">{selectedUserForView.perkiraan_naik_gaji || '-'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                                <span>Naik Pangkat/Jabatan:</span>
+                                                <span className="font-bold text-gray-800">{selectedUserForView.perkiraan_naik_jabatan || '-'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsViewModalOpen(false);
+                                    setSelectedUserForView(null);
+                                }}
+                                className="px-6 py-2.5 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 shadow-md hover:shadow-lg transition active:scale-95"
+                            >
+                                Tutup Detail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL HAPUS PEGAWAI (CONFIRMATION) */}
+            {isDeleteModalOpen && selectedUserForDelete && (
+                <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center p-4 z-50 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-gray-800 animate-in zoom-in-95 duration-200 border border-red-100">
+                        {/* Danger visual highlight */}
+                        <div className="bg-gradient-to-b from-red-50 to-white px-6 pt-6 pb-4 text-center">
+                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4 animate-bounce">
+                                <AlertTriangle className="h-7 w-7" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900">Hapus Data Pegawai?</h3>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Apakah Anda yakin ingin menghapus data pegawai <b>{selectedUserForDelete.name}</b>? Tindakan ini bersifat permanen dan tidak dapat dibatalkan.
+                            </p>
+                            {selectedUserForDelete.id === auth.user.id && (
+                                <div className="mt-3 p-3 bg-red-50 text-red-800 border border-red-200 rounded-lg text-xs font-semibold">
+                                    Perhatian: Ini adalah akun Anda sendiri yang saat ini digunakan untuk login! Anda tidak diperbolehkan menghapus akun aktif Anda sendiri.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="bg-gray-50 px-6 py-4 flex justify-end gap-2 border-t border-gray-100">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsDeleteModalOpen(false);
+                                    setSelectedUserForDelete(null);
+                                }}
+                                className="px-4 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-100 transition"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                onClick={executeDelete}
+                                disabled={selectedUserForDelete.id === auth.user.id}
+                                className="px-5 py-2 text-sm font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 shadow-md hover:shadow-lg transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Ya, Hapus Pegawai
                             </button>
                         </div>
                     </div>
