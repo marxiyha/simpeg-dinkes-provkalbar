@@ -11,14 +11,12 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 7. Rename file yang udah dipaste tadi jadi `.env`
 8. Buka file tersebut lalu di bagian ini ubah seperti ini
 
-`
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=simpeg-dinkes-provkalbar
 DB_USERNAME=root
 DB_PASSWORD=
-`
 
 9. Setelah diubah save lalu buka command prompt (path command prompt nya harus sesuai path folder proyek nya) copy paste command-command ini (tunggu selesai proses download dan install nya baru lanjut ke command berikut)
 
