@@ -11,58 +11,44 @@ class CutiController extends Controller
     | HALAMAN APPROVAL CUTI
     |--------------------------------------------------------------------------
     */
-
     public function approval()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | SIMPAN DATA AWAL KE SESSION
-        |--------------------------------------------------------------------------
-        */
-
-        if (!session()->has('cuti_data'))
-        {
+        if (!session()->has('cuti_data')) {
             session([
-
                 'cuti_data' => [
-
                     [
                         'id' => 1,
                         'nama' => 'Budi Santoso',
-                        'jenis_cuti' => 'Cuti Tahunan',
-                        'tanggal' => '2026-05-10',
                         'bidang' => 'Keuangan',
+                        'jenis_cuti' => 'Cuti Tahunan',
+                        'tanggal_mulai' => '2026-05-10',
+                        'tanggal_selesai' => '2026-05-15',
+                        'alasan_cuti' => 'Acara pernikahan keluarga',
                         'status' => 'Pending',
                     ],
-
                     [
                         'id' => 2,
                         'nama' => 'Dewi Kurnia',
-                        'jenis_cuti' => 'Cuti Besar',
-                        'tanggal' => '2026-05-20',
                         'bidang' => 'Pelayanan',
+                        'jenis_cuti' => 'Cuti Besar',
+                        'tanggal_mulai' => '2026-05-20',
+                        'tanggal_selesai' => '2026-06-03',
+                        'alasan_cuti' => 'Ibadah umroh',
                         'status' => 'Disetujui',
                     ],
-
                     [
                         'id' => 3,
                         'nama' => 'Andi Saputra',
-                        'jenis_cuti' => 'Cuti Sakit',
-                        'tanggal' => '2026-06-01',
                         'bidang' => 'Administrasi',
+                        'jenis_cuti' => 'Cuti Sakit',
+                        'tanggal_mulai' => '2026-06-01',
+                        'tanggal_selesai' => '2026-06-03',
+                        'alasan_cuti' => 'Sakit DBD',
                         'status' => 'Pending',
                     ],
-
                 ]
-
             ]);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL DATA DARI SESSION
-        |--------------------------------------------------------------------------
-        */
 
         $cuti = session('cuti_data');
 
@@ -74,122 +60,45 @@ class CutiController extends Controller
     | UPDATE STATUS CUTI
     |--------------------------------------------------------------------------
     */
-
     public function updateStatus(Request $request, $id)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI
-        |--------------------------------------------------------------------------
-        */
-
         $request->validate([
-
             'status' => 'required'
-
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL DATA SESSION
-        |--------------------------------------------------------------------------
-        */
 
         $cuti = session('cuti_data', []);
 
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE STATUS BERDASARKAN ID
-        |--------------------------------------------------------------------------
-        */
-
-        foreach ($cuti as &$item)
-        {
-            if ($item['id'] == $id)
-            {
+        foreach ($cuti as &$item) {
+            if ($item['id'] == $id) {
                 $item['status'] = $request->status;
             }
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | SIMPAN KEMBALI KE SESSION
-        |--------------------------------------------------------------------------
-        */
-
-        session([
-
-            'cuti_data' => $cuti
-
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | RESPONSE JSON
-        |--------------------------------------------------------------------------
-        */
+        session(['cuti_data' => $cuti]);
 
         return response()->json([
-
             'success' => true,
-            'message' => 'Status berhasil disimpan'
-
+            'message' => 'Status berhasil diperbarui'
         ]);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | HALAMAN REKAP CUTI
+    | REKAP CUTI
     |--------------------------------------------------------------------------
     */
-
     public function rekap(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | FILTER TAHUN
-        |--------------------------------------------------------------------------
-        */
-
         $tahun = $request->get('tahun', date('Y'));
-
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL DATA DARI SESSION
-        |--------------------------------------------------------------------------
-        */
-
         $data = session('cuti_data', []);
 
-        /*
-        |--------------------------------------------------------------------------
-        | FILTER DATA BERDASARKAN TAHUN
-        |--------------------------------------------------------------------------
-        */
-
-        $filtered = [];
-
-        foreach ($data as $item)
-        {
-            $tahunData = date('Y', strtotime($item['tanggal']));
-
-            if ($tahunData == $tahun)
-            {
-                $filtered[] = $item;
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | KIRIM KE VIEW
-        |--------------------------------------------------------------------------
-        */
+        $filtered = array_filter($data, function ($item) use ($tahun) {
+            return date('Y', strtotime($item['tanggal_mulai'])) == $tahun;
+        });
 
         return view('cuti.rekap', [
-
             'data' => $filtered,
             'tahun' => $tahun
-
         ]);
     }
 }

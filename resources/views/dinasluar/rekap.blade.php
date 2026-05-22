@@ -8,15 +8,25 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
-<title>Rekap Dinas Luar</title>
+<title>Rekapitulasi Dinas Luar</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet">
 
 <style>
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    font-family:Arial, sans-serif;
-    background:#f4f7f1;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    background:#00A843;
     margin:0;
     padding:30px;
+    color:#1f2937;
 }
 
 /*
@@ -27,20 +37,38 @@ body{
 
 .container{
     background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    padding:30px;
+    border-radius:24px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    border-top:8px solid #00A843;
 }
 
 /*
 |--------------------------------------------------------------------------
-| TITLE
+| HEADER
 |--------------------------------------------------------------------------
 */
 
-h2{
-    color:#4f7f16;
-    margin-bottom:20px;
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:28px;
+}
+
+.header h2{
+    color:#166534;
+    font-size:32px;
+    font-weight:800;
+}
+
+.header p{
+    color:#6b7280;
+    margin-top:8px;
+    line-height:1.7;
+    font-size:14px;
 }
 
 /*
@@ -51,21 +79,35 @@ h2{
 
 .filter-area{
     display:flex;
-    gap:10px;
+    gap:14px;
     flex-wrap:wrap;
-    margin-bottom:20px;
+    margin-bottom:26px;
 }
 
 .search-input,
 .filter-tahun{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #ccc;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid #d1d5db;
     outline:none;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    transition:0.3s;
+    background:white;
 }
 
 .search-input{
-    width:250px;
+    width:280px;
+}
+
+.search-input:focus,
+.filter-tahun:focus{
+    border-color:#00A843;
+    box-shadow:0 0 0 4px rgba(0,168,67,0.15);
+}
+
+.filter-tahun{
+    font-weight:700;
+    cursor:pointer;
 }
 
 /*
@@ -76,6 +118,8 @@ h2{
 
 .table-wrapper{
     overflow-x:auto;
+    border-radius:20px;
+    border:1px solid #e5e7eb;
 }
 
 table{
@@ -84,38 +128,49 @@ table{
     background:white;
 }
 
+thead{
+    background:#dcfce7;
+}
+
 th{
-    background:#eef7df;
-    color:#4f7f16;
-    padding:12px;
+    padding:18px;
     text-align:left;
+    color:#166534;
+    font-size:14px;
+    font-weight:800;
 }
 
 td{
-    padding:12px;
-    border-bottom:1px solid #ddd;
+    padding:18px;
+    border-bottom:1px solid #f1f5f9;
+    color:#374151;
+    font-size:14px;
 }
 
-tr:hover{
-    background:#fafafa;
+tbody tr{
+    transition:0.3s;
+}
+
+tbody tr:hover{
+    background:#f0fdf4;
 }
 
 /*
 |--------------------------------------------------------------------------
-| BACK BUTTON
+| BADGE
 |--------------------------------------------------------------------------
 */
 
-.btn-back{
-    display:inline-block;
-    margin-top:20px;
-    color:#4f7f16;
-    text-decoration:none;
-    font-weight:bold;
-}
-
-.btn-back:hover{
-    text-decoration:underline;
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#dcfce7;
+    color:#15803d;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
 }
 
 /*
@@ -126,8 +181,34 @@ tr:hover{
 
 .empty-data{
     text-align:center;
-    color:#777;
-    padding:25px;
+    color:#6b7280;
+    padding:30px;
+    font-weight:600;
+}
+
+/*
+|--------------------------------------------------------------------------
+| BUTTON
+|--------------------------------------------------------------------------
+*/
+
+.btn-back{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:24px;
+    background:#00A843;
+    color:white;
+    text-decoration:none;
+    padding:14px 20px;
+    border-radius:14px;
+    font-weight:700;
+    transition:0.3s;
+}
+
+.btn-back:hover{
+    background:#008d38;
+    transform:translateY(-2px);
 }
 
 /*
@@ -139,7 +220,16 @@ tr:hover{
 @media(max-width:768px){
 
     body{
-        padding:15px;
+        padding:16px;
+    }
+
+    .container{
+        padding:20px;
+    }
+
+    .header{
+        flex-direction:column;
+        align-items:flex-start;
     }
 
     .filter-area{
@@ -152,7 +242,16 @@ tr:hover{
     }
 
     table{
-        font-size:14px;
+        font-size:13px;
+    }
+
+    th,
+    td{
+        padding:14px;
+    }
+
+    .header h2{
+        font-size:26px;
     }
 
 }
@@ -165,165 +264,228 @@ tr:hover{
 
 <div class="container">
 
-<h2>Rekap Dinas Luar</h2>
+    <!-- HEADER -->
+    <div class="header">
 
-<!-- FILTER -->
-<div class="filter-area">
+        <div>
 
-    <!-- SEARCH -->
-    <input
-        type="text"
-        id="searchInput"
-        class="search-input"
-        placeholder="Cari nama pegawai..."
-        onkeyup="searchPegawai()"
-    >
+            <h2>
+                Rekapitulasi Dinas Luar
+            </h2>
 
-    <!-- FILTER TAHUN 2026+ -->
-    <select
-        id="tahunFilter"
-        class="filter-tahun"
-        onchange="filterTahun()"
-    >
+            <p>
+                Halaman ini digunakan untuk melihat seluruh data kegiatan dinas luar pegawai berdasarkan tanggal, lokasi, dan keterangan kegiatan secara terintegrasi.
+            </p>
 
-        <option value="">
-            Semua Tahun
-        </option>
+        </div>
 
-        @for($i = 2026; $i <= 2035; $i++)
+    </div>
 
-            <option value="{{ $i }}">
+    <!-- FILTER -->
+    <div class="filter-area">
 
-                {{ $i }}
+        <!-- SEARCH -->
+        <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Cari nama pegawai..."
+            onkeyup="searchPegawai()"
+        >
 
+        <!-- FILTER TAHUN -->
+        <select
+            id="tahunFilter"
+            class="filter-tahun"
+            onchange="filterTahun()"
+        >
+
+            <option value="">
+                Semua Tahun
             </option>
 
-        @endfor
+            @for($i = 2024; $i <= 2029; $i++)
 
-    </select>
+                <option value="{{ $i }}">
 
-</div>
+                    {{ $i }}
 
-<!-- TABLE -->
-<div class="table-wrapper">
+                </option>
 
-<table id="rekapTable">
+            @endfor
 
-<thead>
+        </select>
 
-<tr>
-    <th>No</th>
-    <th>Nama</th>
-    <th>Tanggal Dinas</th>
-    <th>Lokasi</th>
-    <th>Keterangan</th>
-</tr>
+    </div>
 
-</thead>
+    <!-- TABLE -->
+    <div class="table-wrapper">
 
-<tbody>
+        <table id="rekapTable">
 
-<tr>
+            <thead>
 
-    <td>1</td>
+                <tr>
 
-    <td>
-        Budi Santoso
-    </td>
+                    <th>No</th>
 
-    <td class="tanggal">
-        10-05-2026
-    </td>
+                    <th>Nama Pegawai</th>
 
-    <td>
-        Jakarta
-    </td>
+                    <th>Tanggal Dinas</th>
 
-    <td>
-        Monitoring Puskesmas
-    </td>
+                    <th>Lokasi</th>
 
-</tr>
+                    <th>Keterangan</th>
 
-<tr>
+                    <th>Status</th>
 
-    <td>2</td>
+                </tr>
 
-    <td>
-        Dewi Kurnia
-    </td>
+            </thead>
 
-    <td class="tanggal">
-        15-05-2026
-    </td>
+            <tbody>
 
-    <td>
-        Pontianak
-    </td>
+                <tr>
 
-    <td>
-        Survey Lapangan
-    </td>
+                    <td>1</td>
 
-</tr>
+                    <td>
+                        Budi Santoso
+                    </td>
 
-<tr>
+                    <td class="tanggal">
+                        10-05-2026
+                    </td>
 
-    <td>3</td>
+                    <td>
+                        Jakarta
+                    </td>
 
-    <td>
-        Andi Saputra
-    </td>
+                    <td>
+                        Monitoring Puskesmas
+                    </td>
 
-    <td class="tanggal">
-        12-07-2027
-    </td>
+                    <td>
 
-    <td>
-        Bandung
-    </td>
+                        <span class="badge">
 
-    <td>
-        Evaluasi Program
-    </td>
+                            Aktif
 
-</tr>
+                        </span>
 
-<tr>
+                    </td>
 
-    <td>4</td>
+                </tr>
 
-    <td>
-        Maria Grace
-    </td>
+                <tr>
 
-    <td class="tanggal">
-        20-08-2028
-    </td>
+                    <td>2</td>
 
-    <td>
-        Surabaya
-    </td>
+                    <td>
+                        Dewi Kurnia
+                    </td>
 
-    <td>
-        Kunjungan Dinas
-    </td>
+                    <td class="tanggal">
+                        15-05-2026
+                    </td>
 
-</tr>
+                    <td>
+                        Pontianak
+                    </td>
 
-</tbody>
+                    <td>
+                        Survey Lapangan
+                    </td>
 
-</table>
+                    <td>
 
-</div>
+                        <span class="badge">
 
-<!-- BACK -->
-<a href="{{ route('dashboard') }}"
-   class="btn-back">
+                            Aktif
 
-    ← Kembali
+                        </span>
 
-</a>
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>3</td>
+
+                    <td>
+                        Andi Saputra
+                    </td>
+
+                    <td class="tanggal">
+                        12-07-2027
+                    </td>
+
+                    <td>
+                        Bandung
+                    </td>
+
+                    <td>
+                        Evaluasi Program
+                    </td>
+
+                    <td>
+
+                        <span class="badge">
+
+                            Aktif
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>4</td>
+
+                    <td>
+                        Maria Grace
+                    </td>
+
+                    <td class="tanggal">
+                        20-08-2028
+                    </td>
+
+                    <td>
+                        Surabaya
+                    </td>
+
+                    <td>
+                        Kunjungan Dinas
+                    </td>
+
+                    <td>
+
+                        <span class="badge">
+
+                            Aktif
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- BACK -->
+    <a href="{{ route('dashboard') }}"
+       class="btn-back">
+
+        ← Kembali ke Dashboard
+
+    </a>
 
 </div>
 

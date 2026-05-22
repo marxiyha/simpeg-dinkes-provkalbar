@@ -7,7 +7,7 @@ DROP DATABASE IF EXISTS admin_super;
 -- BUAT DATABASE BARU
 -- =====================================================
 CREATE DATABASE admin_super;
-USE admin_super;
+USE admin_super;S
 
 -- =====================================================
 -- USERS (FINAL FIX - SESUAI WEB.PHP KAMU)

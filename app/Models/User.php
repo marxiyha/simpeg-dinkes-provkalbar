@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,33 +10,55 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    /**
+     * Field yang boleh diisi (mass assignment)
+     */
     protected $fillable = [
         'name',
-        'username',
         'email',
+        'username',
         'password',
         'role',
-        'is_active'
     ];
 
+    /**
+     * Field yang disembunyikan saat return JSON / array
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    protected $casts = [
-        'password' => 'hashed',
-    ];
-
-    public function leaves()
+    /**
+     * Cast otomatis untuk tipe data
+     */
+    protected function casts(): array
     {
-        return $this->hasMany(Leave::class);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
-    public function fieldTasks()
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE HELPER
+    |--------------------------------------------------------------------------
+    | Mempermudah pengecekan role di controller / blade
+    */
+
+    public function isPetinggi(): bool
     {
-        return $this->hasMany(FieldTask::class);
+        return $this->role === 'petinggi';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isPegawai(): bool
+    {
+        return $this->role === 'pegawai';
     }
 }
-
-

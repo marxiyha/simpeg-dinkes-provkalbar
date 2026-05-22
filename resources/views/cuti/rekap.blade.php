@@ -8,15 +8,25 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
-<title>Rekap Cuti Pegawai</title>
+<title>Rekapitulasi Cuti Pegawai</title>
+
+<!-- GOOGLE FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet">
 
 <style>
 
-body{
-    font-family:Arial, sans-serif;
-    background:#f4f7f1;
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    background:#00A843;
     padding:30px;
+    color:#1f2937;
 }
 
 /*
@@ -27,20 +37,61 @@ body{
 
 .container{
     background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    padding:30px;
+    border-radius:28px;
+    box-shadow:0 12px 35px rgba(0,0,0,0.12);
+    animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
 }
 
 /*
 |--------------------------------------------------------------------------
-| TITLE
+| HEADER
 |--------------------------------------------------------------------------
 */
 
-h2{
-    color:#4f7f16;
-    margin-bottom:20px;
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:28px;
+}
+
+.header-left h2{
+    color:#166534;
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.header-left p{
+    color:#6b7280;
+    line-height:1.8;
+    font-size:14px;
+}
+
+.header-badge{
+    background:#dcfce7;
+    color:#15803d;
+    padding:12px 18px;
+    border-radius:999px;
+    font-weight:800;
+    font-size:14px;
 }
 
 /*
@@ -51,21 +102,36 @@ h2{
 
 .filter-area{
     display:flex;
-    gap:10px;
+    gap:16px;
     flex-wrap:wrap;
-    margin-bottom:20px;
+    margin-bottom:25px;
 }
 
 .search-input,
 .filter-tahun{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #ccc;
+    padding:14px 18px;
+    border-radius:14px;
+    border:2px solid #d1d5db;
     outline:none;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    transition:0.3s;
+    font-size:14px;
 }
 
 .search-input{
-    width:250px;
+    width:280px;
+}
+
+.search-input:focus,
+.filter-tahun:focus{
+    border-color:#00A843;
+    box-shadow:0 0 0 5px rgba(0,168,67,0.12);
+}
+
+.filter-tahun{
+    min-width:180px;
+    font-weight:700;
+    cursor:pointer;
 }
 
 /*
@@ -76,6 +142,8 @@ h2{
 
 .table-wrapper{
     overflow-x:auto;
+    border-radius:22px;
+    border:1px solid #e5e7eb;
 }
 
 table{
@@ -84,20 +152,49 @@ table{
     background:white;
 }
 
+thead{
+    background:linear-gradient(90deg,#00A843,#008D38);
+}
+
 th{
-    background:#eef7df;
-    color:#4f7f16;
-    padding:12px;
+    color:white;
+    padding:18px 16px;
     text-align:left;
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
 }
 
 td{
-    padding:12px;
-    border-bottom:1px solid #ddd;
+    padding:18px 16px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:14px;
 }
 
-tr:hover{
-    background:#fafafa;
+tbody tr{
+    transition:0.25s;
+}
+
+tbody tr:hover{
+    background:#f0fdf4;
+}
+
+/*
+|--------------------------------------------------------------------------
+| NOMOR
+|--------------------------------------------------------------------------
+*/
+
+.nomor-box{
+    width:36px;
+    height:36px;
+    border-radius:12px;
+    background:#dcfce7;
+    color:#166534;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:800;
 }
 
 /*
@@ -107,12 +204,14 @@ tr:hover{
 */
 
 .status{
-    padding:6px 12px;
-    border-radius:8px;
+    padding:8px 14px;
+    border-radius:999px;
     color:white;
     font-size:12px;
-    font-weight:bold;
+    font-weight:800;
     display:inline-block;
+    min-width:100px;
+    text-align:center;
 }
 
 .pending{
@@ -120,11 +219,11 @@ tr:hover{
 }
 
 .approved{
-    background:#4f7f16;
+    background:#00A843;
 }
 
 .rejected{
-    background:#dc2626;
+    background:#ef4444;
 }
 
 /*
@@ -133,16 +232,27 @@ tr:hover{
 |--------------------------------------------------------------------------
 */
 
+.back-area{
+    margin-top:28px;
+}
+
 .btn-back{
-    display:inline-block;
-    margin-top:20px;
-    color:#4f7f16;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 18px;
+    background:white;
+    color:#166534;
     text-decoration:none;
-    font-weight:bold;
+    border-radius:14px;
+    border:2px solid #dcfce7;
+    font-weight:800;
+    transition:0.3s;
 }
 
 .btn-back:hover{
-    text-decoration:underline;
+    background:#dcfce7;
+    transform:translateX(-4px);
 }
 
 /*
@@ -153,8 +263,10 @@ tr:hover{
 
 .empty-data{
     text-align:center;
-    color:#777;
-    padding:25px;
+    color:#6b7280;
+    padding:40px;
+    font-size:15px;
+    font-weight:600;
 }
 
 /*
@@ -166,7 +278,21 @@ tr:hover{
 @media(max-width:768px){
 
     body{
-        padding:15px;
+        padding:16px;
+    }
+
+    .container{
+        padding:22px;
+        border-radius:22px;
+    }
+
+    .header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .header-left h2{
+        font-size:28px;
     }
 
     .filter-area{
@@ -179,7 +305,7 @@ tr:hover{
     }
 
     table{
-        font-size:14px;
+        min-width:700px;
     }
 
 }
@@ -192,138 +318,184 @@ tr:hover{
 
 <div class="container">
 
-<h2>Rekap Cuti Pegawai</h2>
+    <!-- HEADER -->
+    <div class="header">
 
-<!-- FILTER -->
-<div class="filter-area">
+        <div class="header-left">
 
-    <!-- SEARCH -->
-    <input
-        type="text"
-        id="searchInput"
-        class="search-input"
-        placeholder="Cari nama pegawai..."
-        onkeyup="searchPegawai()"
-    >
+            <h2>
+                Rekapitulasi Cuti Pegawai
+            </h2>
 
-    <!-- FILTER TAHUN 2026+ -->
-    <select
-        id="tahunFilter"
-        class="filter-tahun"
-        onchange="filterTahun()"
-    >
+            <p>
+                Halaman ini digunakan untuk melihat rekapitulasi dan laporan data pengajuan cuti pegawai berdasarkan tahun dan status pengajuan.
+            </p>
 
-        <option value="">
-            Semua Tahun
-        </option>
+        </div>
 
-        @for($i = 2026; $i <= 2035; $i++)
+        <div class="header-badge">
 
-            <option value="{{ $i }}">
+            Rekap Data Aktif
 
-                {{ $i }}
+        </div>
 
+    </div>
+
+    <!-- FILTER -->
+    <div class="filter-area">
+
+        <!-- SEARCH -->
+        <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Cari nama pegawai..."
+            onkeyup="searchPegawai()"
+        >
+
+        <!-- FILTER TAHUN -->
+        <select
+            id="tahunFilter"
+            class="filter-tahun"
+            onchange="filterTahun()"
+        >
+
+            <option value="">
+                Semua Tahun
             </option>
 
-        @endfor
+            @for($i = 2024; $i <= 2029; $i++)
 
-    </select>
+                <option value="{{ $i }}">
 
-</div>
+                    {{ $i }}
 
-<!-- TABLE -->
-<div class="table-wrapper">
+                </option>
 
-<table id="rekapTable">
+            @endfor
 
-<thead>
+        </select>
 
-<tr>
-    <th>No</th>
-    <th>Nama</th>
-    <th>Tanggal</th>
-    <th>Bidang</th>
-    <th>Status</th>
-</tr>
+    </div>
 
-</thead>
+    <!-- TABLE -->
+    <div class="table-wrapper">
 
-<tbody>
+        <table id="rekapTable">
 
-@forelse($data as $index => $item)
+            <thead>
 
-<tr>
+                <tr>
 
-    <td>
-        {{ $index + 1 }}
-    </td>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Tanggal Selesai</th>
+                    <th>Alasan Cuti</th>
+                    <th>Status</th>
 
-    <td>
-        {{ $item['nama'] }}
-    </td>
+                </tr>
 
-    <td class="tanggal">
-        {{ $item['tanggal'] }}
-    </td>
+            </thead>
 
-    <td>
-        {{ $item['bidang'] }}
-    </td>
+            <tbody>
 
-    <td>
+            @forelse($data as $index => $item)
 
-        @if($item['status'] == 'Pending')
+            <tr>
 
-            <span class="status pending">
-                Pending
-            </span>
+                <td>
 
-        @elseif($item['status'] == 'Disetujui')
+                    <div class="nomor-box">
 
-            <span class="status approved">
-                Disetujui
-            </span>
+                        {{ $index + 1 }}
 
-        @elseif($item['status'] == 'Ditolak')
+                    </div>
 
-            <span class="status rejected">
-                Ditolak
-            </span>
+                </td>
 
-        @endif
+                <td>
 
-    </td>
+                    <b>{{ $item['nama'] }}</b>
 
-</tr>
+                </td>
 
-@empty
+                <td class="tanggal">
 
-<tr>
+                    {{ $item['tanggal'] }}
 
-    <td colspan="5"
-        class="empty-data">
+                </td>
 
-        Data rekap cuti tidak tersedia
+                <td>
 
-    </td>
+                    {{ $item['bidang'] }}
 
-</tr>
+                </td>
 
-@endforelse
+                <td>
 
-</tbody>
+                    @if($item['status'] == 'Pending')
 
-</table>
+                        <span class="status pending">
 
-</div>
+                            Pending
 
-<!-- BACK -->
-<a href="{{ route('dashboard') }}"
-   class="btn-back">
+                        </span>
 
-    ← Kembali
+                    @elseif($item['status'] == 'Disetujui')
 
-</a>
+                        <span class="status approved">
+
+                            Disetujui
+
+                        </span>
+
+                    @elseif($item['status'] == 'Ditolak')
+
+                        <span class="status rejected">
+
+                            Ditolak
+
+                        </span>
+
+                    @endif
+
+                </td>
+
+            </tr>
+
+            @empty
+
+            <tr>
+
+                <td colspan="5"
+                    class="empty-data">
+
+                    Data rekap cuti tidak tersedia
+
+                </td>
+
+            </tr>
+
+            @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- BACK -->
+    <div class="back-area">
+
+        <a href="{{ route('dashboard') }}"
+           class="btn-back">
+
+            ← Kembali ke Dashboard
+
+        </a>
+
+    </div>
 
 </div>
 
@@ -430,4 +602,5 @@ function filterTahun()
 </script>
 
 </body>
+
 </html>

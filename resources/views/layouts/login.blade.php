@@ -1,79 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
-<title>Register</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Dinas Kesehatan Kalbar</title>
 
 <style>
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial;}
+
 body{
-    margin:0;
-    font-family:Arial;
-    background:#f4f7f1;
+    height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    background:#f3f4f6;
 }
 
 .box{
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    width:350px;
+    width:420px;
+    background:#fff;
+    padding:32px;
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+}
+
+.header{
     text-align:center;
+    margin-bottom:20px;
+}
+
+.header h1{
+    font-size:16px;
+    font-weight:700;
+    color:#111827;
+}
+
+.header p{
+    font-size:13px;
+    color:#6b7280;
+    margin-top:5px;
+}
+
+label{
+    font-size:13px;
+    font-weight:600;
+    color:#374151;
 }
 
 input{
     width:100%;
-    padding:10px;
-    margin:10px 0;
+    padding:11px;
+    margin-top:6px;
+    margin-bottom:12px;
+    border:1px solid #d1d5db;
     border-radius:8px;
-    border:1px solid #ccc;
+    outline:none;
 }
 
-button{
+input:focus{
+    border-color:#00A843;
+    box-shadow:0 0 0 3px rgba(0,168,67,0.15);
+}
+
+.btn{
     width:100%;
-    padding:10px;
-    background:#4f7f16;
-    color:white;
+    padding:11px;
     border:none;
     border-radius:8px;
+    background:#00A843;
+    color:white;
+    font-weight:700;
+    cursor:pointer;
 }
 
-a{
-    display:block;
-    margin-top:10px;
-    color:#4f7f16;
-    text-decoration:none;
+.btn:hover{
+    background:#008d38;
 }
+
+.links{
+    display:flex;
+    justify-content:space-between;
+    margin-top:14px;
+    font-size:12px;
+}
+
+.links a{
+    color:#00A843;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.links a:hover{text-decoration:underline;}
+
+.footer{
+    text-align:center;
+    margin-top:18px;
+    font-size:11px;
+    color:#9ca3af;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div class="box">
 
-    <h2>LOGIN</h2>
-<form method="POST" action="/login">
-    @csrf
+    <div class="header">
+        <h1>SISTEM DINAS KESEHATAN</h1>
+        <p>Provinsi Kalimantan Barat</p>
+    </div>
 
-    <input type="email" name="email" placeholder="Email" required>
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
-    <input type="password" id="pass" name="password" placeholder="Password" required>
+        <label>Email</label>
+        <input type="email" name="email" required>
 
-    <label>
-        <input type="checkbox" onclick="toggle()"> Show Password
-    </label>
+        <label>Password</label>
+        <input type="password" name="password" required>
 
-    <button type="submit">Login</button>
-</form>
+        <button class="btn">LOGIN</button>
+    </form>
 
-<a href="/register">Belum punya akun?</a>
+    <div class="links">
+        <a href="{{ url('/register') }}">Daftar</a>
+        <a href="{{ url('/forgot-password') }}">Lupa Password</a>
+    </div>
 
-<script>
-function toggle(){
-    let p = document.getElementById("pass");
-    p.type = (p.type === "password") ? "text" : "password";
-}
-</script>
+    <div class="footer">
+        © {{ date('Y') }} Dinas Kesehatan Kalbar
+    </div>
+
+</div>
+
 </body>
 </html>
