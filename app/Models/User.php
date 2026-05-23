@@ -32,13 +32,10 @@ class User extends Authenticatable
     /**
      * Cast otomatis untuk tipe data
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+    'email_verified_at' => 'datetime',
+   // 'password' => 'hashed', // 🔥 HAPUS ATAU KOMENTARI BARIS INI
+];
 
     /*
     |--------------------------------------------------------------------------

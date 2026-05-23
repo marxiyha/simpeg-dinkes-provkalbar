@@ -1,24 +1,16 @@
- <!DOCTYPE html> 
+<!DOCTYPE html> 
 <html lang="id">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMPEG PETINGGI</title>
 
-    <!-- GOOGLE FONT -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- CHART JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-
         *{
             margin:0;
             padding:0;
@@ -441,17 +433,14 @@
         }
 
         @keyframes fadeIn{
-
             from{
                 opacity:0;
                 transform:translate(-50%,-46%);
             }
-
             to{
                 opacity:1;
                 transform:translate(-50%,-50%);
             }
-
         }
 
         .modal-header{
@@ -576,20 +565,6 @@
             color:#374151;
         }
 
-        .profile-item input{
-            width:100%;
-            padding:14px;
-            border-radius:14px;
-            border:1px solid #d1d5db;
-            outline:none;
-            font-family:'Plus Jakarta Sans', sans-serif;
-        }
-
-        .profile-item input:focus{
-            border-color:#00A843;
-            box-shadow:0 0 0 4px rgba(0,168,67,0.15);
-        }
-
         .profile-text{
             color:#4b5563;
             line-height:1.8;
@@ -603,11 +578,11 @@
         */
 
         @media(max-width:768px){
-
             .sidebar{
                 width:100%;
                 height:auto;
                 position:relative;
+                padding: 16px;
             }
 
             .main{
@@ -643,815 +618,295 @@
             .chart-title{
                 font-size:24px;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
 
-    <!-- OVERLAY -->
-    <div id="overlay"
-         class="overlay">
-    </div>
+    <div id="overlay" class="overlay"></div>
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
-
         <div class="sidebar-top">
-
             <div class="logo">
-
-                <div class="logo-icon">
-
-                    DK
-
-                </div>
-
-                <div class="logo-text">
-
-                    SIMPEG
-
-                </div>
-
+                <div class="logo-icon">DK</div>
+                <div class="logo-text">SIMPEG</div>
             </div>
 
-            <div class="menu-title">
-
-                MENU UTAMA
-
-            </div>
+            <div class="menu-title">MENU UTAMA</div>
 
             <div class="menu">
-
-                <div class="menu-item active"
-                     onclick="location.href='/dashboard/petinggi'">
-
+                <div class="menu-item active" onclick="location.href='{{ route('dashboard') }}'">
                     Dashboard
-
                 </div>
 
-                <div class="menu-item"
-                     onclick="location.href='/cuti/approval'">
-
+                <div class="menu-item" onclick="location.href='{{ route('petinggi.cuti.approval') }}'">
                     Persetujuan Cuti
-
                 </div>
 
-                <div class="menu-item"
-                     onclick="location.href='/cuti/rekap'">
-
+                <div class="menu-item" onclick="location.href='{{ route('petinggi.cuti.rekap') }}'">
                     Rekap Cuti
-
                 </div>
 
-                <div class="menu-item"
-                     onclick="location.href='/dinasluar/kalender'">
-
+                <div class="menu-item" onclick="location.href='{{ route('petinggi.kalender.index') }}'">
                     Kalender Dinas Luar
-
                 </div>
 
-                <div class="menu-item"
-                     onclick="location.href='/dinasluar/rekap'">
-
+                <div class="menu-item" onclick="location.href='{{ route('petinggi.rekap_dinas.index') }}'">
                     Rekap Dinas Luar
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="sidebar-bottom">
-
             <div class="profile-box">
-
-                <div class="profile-avatar">
-
-                    P
-
-                </div>
-
+                <div class="profile-avatar">P</div>
                 <div>
-
                     <b>Petinggi</b>
-
                 </div>
-
             </div>
 
-            <form method="POST"
-                  action="{{ route('logout') }}">
-
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-
-                <button class="logout-btn">
-
-                    Logout
-
-                </button>
-
+                <button class="logout-btn">Logout</button>
             </form>
-
         </div>
-
     </div>
 
-    <!-- MAIN -->
     <div class="main">
-
-        <!-- TOPBAR -->
         <div class="topbar">
-
-            <h2>
-
-                Dashboard Monitoring Kepegawaian
-
-            </h2>
-
+            <h2>Dashboard Monitoring Kepegawaian</h2>
             <div class="topbar-right">
-
-                <button class="btn btn-green"
-                        onclick="openPanduan()">
-
-                    Panduan
-
-                </button>
-
-                <button class="btn btn-white"
-                        onclick="openProfile()">
-
-                    Profil
-
-                </button>
-
+                <button class="btn btn-green" onclick="openPanduan()">Panduan</button>
+                <button class="btn btn-white" onclick="openProfile()">Profil</button>
             </div>
-
         </div>
 
-        <!-- DASHBOARD -->
         <div class="dashboard">
-
-
-
-            <!-- MENU -->
-            <div class="menu-grid">
-
-                <div class="card"
-                     onclick="location.href='/cuti/approval'">
-
-                    <h3>
-
-                        Persetujuan Cuti
-
-                    </h3>
-
-                </div>
-
-                <div class="card"
-                     onclick="location.href='/cuti/rekap'">
-
-                    <h3>
-
-                        Rekapitulasi Cuti
-
-                    </h3>
-
-                </div>
-
-                <div class="card"
-                     onclick="location.href='/dinasluar/kalender'">
-
-                    <h3>
-
-                        Kalender Dinas Luar
-
-                    </h3>
-
-                </div>
-
-                <div class="card"
-                     onclick="location.href='/dinasluar/rekap'">
-
-                    <h3>
-
-                        Rekapitulasi Kalender Dinas Luar
-
-                    </h3>
-
-                </div>
-
+            <div class="welcome-box">
+                <h1>Selamat Datang</h1>
+                <p>Monitor dan kelola data pengajuan cuti serta agenda dinas luar pegawai Dinas Kesehatan secara terintegrasi melalui panel kendali petinggi.</p>
             </div>
 
-            <!-- CHART -->
+            <div class="menu-grid">
+                <div class="card" onclick="location.href='{{ route('petinggi.cuti.approval') }}'">
+                    <h3>Persetujuan Cuti</h3>
+                </div>
+
+                <div class="card" onclick="location.href='{{ route('petinggi.cuti.rekap') }}'">
+                    <h3>Rekapitulasi Cuti</h3>
+                </div>
+
+                <div class="card" onclick="location.href='{{ route('petinggi.kalender.index') }}'">
+                    <h3>Kalender Dinas Luar</h3>
+                </div>
+
+                <div class="card" onclick="location.href='{{ route('petinggi.rekap_dinas.index') }}'">
+                    <h3>Rekapitulasi Kalender Dinas Luar</h3>
+                </div>
+            </div>
+
             <div class="chart-box">
-
                 <div class="chart-header">
-
                     <div>
-
-                        <div class="chart-title"
-                             id="judulChart">
-
+                        <div class="chart-title" id="judulChart">
                             Statistik Pengajuan Cuti Tahun 2026
-
                         </div>
-
                         <div class="chart-subtitle">
-
                             Grafik pengajuan cuti pegawai berdasarkan tahun yang dipilih.
-
                         </div>
-
                     </div>
 
                     <div class="filter-box">
-
                         <b>Tahun</b>
-
                         <select id="tahunFilter">
-
                             <option value="2024">2024</option>
                             <option value="2025">2025</option>
                             <option value="2026" selected>2026</option>
                             <option value="2027">2027</option>
                             <option value="2028">2028</option>
                             <option value="2029">2029</option>
-
                         </select>
-
                     </div>
-
                 </div>
 
                 <div class="chart-container">
-
                     <canvas id="chartCuti"></canvas>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-    <!-- PANDUAN -->
-    <div id="panduanModal"
-         class="modal">
-
+    <div id="panduanModal" class="modal">
         <div class="modal-header">
-
             <div>
-
-                <h2>
-
-                    Panduan Penggunaan
-
-                </h2>
-
-                <p>
-
-                    Sistem Informasi Kepegawaian Dinas Kesehatan
-
-                </p>
-
+                <h2>Panduan Penggunaan</h2>
+                <p>Sistem Informasi Kepegawaian Dinas Kesehatan</p>
             </div>
-
-            <button class="close-btn"
-                    onclick="closePanduan()">
-
-                ✕
-
-            </button>
-
+            <button class="close-btn" onclick="closePanduan()">✕</button>
         </div>
 
         <div class="modal-body">
-
             <div class="panduan-card">
-
-                <h3>
-
-                    Dashboard Monitoring Kepegawaian
-
-                </h3>
-
-                <p>
-
-                    Dashboard Monitoring Kepegawaian digunakan sebagai pusat pemantauan seluruh aktivitas kepegawaian pada Sistem Informasi Kepegawaian Dinas Kesehatan. Melalui dashboard ini, petinggi dapat melihat statistik pengajuan cuti pegawai, aktivitas dinas luar, serta memantau data secara terintegrasi berdasarkan tahun yang dipilih secara interaktif.
-
-                </p>
-
-                <p style="margin-top:14px;">
-
-                    Grafik statistik yang tersedia akan menampilkan jumlah pengajuan cuti pegawai setiap bulan sesuai tahun yang dipilih. Data grafik diperbarui secara otomatis ketika filter tahun diubah sehingga mempermudah proses monitoring dan evaluasi data kepegawaian.
-
-                </p>
-
+                <h3>Dashboard Monitoring Kepegawaian</h3>
+                <p>Dashboard Monitoring Kepegawaian digunakan sebagai pusat pemantauan seluruh aktivitas kepegawaian pada Sistem Informasi Kepegawaian Dinas Kesehatan. Melalui dashboard ini, petinggi dapat melihat statistik pengajuan cuti pegawai, aktivitas dinas luar, serta memantau data secara terintegrasi berdasarkan tahun yang dipilih secara interaktif.</p>
             </div>
 
             <div class="panduan-card">
-
-                <h3>
-
-                    Persetujuan Cuti
-
-                </h3>
-
-                <p>
-
-                    Menu Persetujuan Cuti digunakan untuk melakukan pemeriksaan data pengajuan cuti pegawai secara terstruktur. Petinggi dapat melihat informasi pegawai, tanggal cuti, alasan pengajuan, dan status pengajuan sebelum memberikan keputusan.
-
-                </p>
-
+                <h3>Persetujuan Cuti</h3>
+                <p>Menu Persetujuan Cuti digunakan untuk melakukan pemeriksaan data pengajuan cuti pegawai secara terstruktur. Petinggi dapat melihat informasi pegawai, tanggal cuti, alasan pengajuan, dan status pengajuan sebelum memberikan keputusan.</p>
                 <div class="status-group">
-
-                    <div class="status pending">
-
-                        Pending
-
-                    </div>
-
-                    <div class="status approved">
-
-                        Disetujui
-
-                    </div>
-
-                    <div class="status rejected">
-
-                        Ditolak
-
-                    </div>
-
+                    <div class="status pending">Pending</div>
+                    <div class="status approved">Disetujui</div>
+                    <div class="status rejected">Ditolak</div>
                 </div>
-
-                <p>
-
-                    Setiap perubahan status pengajuan akan tersimpan secara otomatis ke dalam sistem sehingga data dapat dipantau kembali melalui menu rekapitulasi cuti pegawai.
-
-                </p>
-
             </div>
 
             <div class="panduan-card">
-
-                <h3>
-
-                    Rekapitulasi Cuti
-
-                </h3>
-
-                <p>
-
-                    Menu Rekapitulasi Cuti digunakan untuk melihat seluruh riwayat pengajuan cuti pegawai berdasarkan periode tertentu. Data dapat digunakan sebagai bahan monitoring, evaluasi, serta laporan administrasi kepegawaian.
-
-                </p>
-
-                <p style="margin-top:14px;">
-
-                    Sistem akan menampilkan data pengajuan cuti yang disetujui, pending, maupun ditolak secara terstruktur dan mudah dipahami.
-
-                </p>
-
+                <h3>Rekapitulasi Cuti</h3>
+                <p>Menu Rekapitulasi Cuti digunakan untuk melihat seluruh riwayat pengajuan cuti pegawai berdasarkan periode tertentu.</p>
             </div>
 
             <div class="panduan-card">
-
-                <h3>
-
-                    Kalender Dinas Luar
-
-                </h3>
-
-                <p>
-
-                    Kalender Dinas Luar digunakan untuk melihat jadwal kegiatan dinas luar seluruh pegawai berdasarkan tanggal kegiatan yang telah terdaftar di dalam sistem.
-
-                </p>
-
-                <p style="margin-top:14px;">
-
-                    Tampilan kalender membantu petinggi memantau agenda kegiatan pegawai secara lebih terstruktur sehingga mempermudah proses pengawasan dan koordinasi kegiatan dinas luar.
-
-                </p>
-
+                <h3>Kalender Dinas Luar</h3>
+                <p>Kalender Dinas Luar digunakan untuk melihat jadwal kegiatan dinas luar seluruh pegawai berdasarkan tanggal kegiatan yang telah terdaftar di dalam sistem.</p>
             </div>
 
             <div class="panduan-card">
-
-                <h3>
-
-                    Rekapitulasi Kalender Dinas Luar
-
-                </h3>
-
-                <p>
-
-                    Menu Rekapitulasi Kalender Dinas Luar digunakan untuk melihat data dan riwayat kegiatan dinas luar pegawai secara lengkap berdasarkan periode tertentu.
-
-                </p>
-
-                <p style="margin-top:14px;">
-
-                    Data rekapitulasi dapat digunakan untuk proses monitoring kegiatan pegawai, evaluasi aktivitas dinas luar, serta dokumentasi administrasi kepegawaian.
-
-                </p>
-
+                <h3>Rekapitulasi Kalender Dinas Luar</h3>
+                <p>Menu Rekapitulasi Kalender Dinas Luar digunakan untuk melihat data dan riwayat kegiatan dinas luar pegawai secara lengkap berdasarkan periode tertentu.</p>
             </div>
 
             <div class="panduan-card">
-
-                <h3>
-
-                    Profil Pengguna
-
-                </h3>
-
-                <p>
-
-                    Menu Profil digunakan untuk melihat informasi akun pengguna seperti nama dan email yang terdaftar pada sistem.
-
-                </p>
-
-                <p style="margin-top:14px;">
-
-                    Pengguna juga dapat melakukan perubahan kata sandi untuk menjaga keamanan akun serta menghapus akun melalui tombol Hapus Akun yang tersedia pada halaman profil.
-
-                </p>
-
+                <h3>Profil Pengguna</h3>
+                <p>Menu Profil digunakan untuk melihat informasi akun pengguna seperti nama dan email yang terdaftar pada sistem.</p>
             </div>
-
         </div>
-
     </div>
 
-    <!-- PROFILE -->
-    <div id="profileModal"
-         class="modal"
-         style="width:520px;">
-
+    <div id="profileModal" class="modal" style="width:520px;">
         <div class="modal-header">
-
             <div>
-
-                <h2>
-
-                    Profil Pengguna
-
-                </h2>
-
+                <h2>Profil Pengguna</h2>
             </div>
-
-            <button class="close-btn"
-                    onclick="closeProfile()">
-
-                ✕
-
-            </button>
-
+            <button class="close-btn" onclick="closeProfile()">✕</button>
         </div>
 
         <div class="profile-content">
-
             <div class="profile-item">
-
-                <label>
-
-                    Nama
-
-                </label>
-
-                <div class="profile-text">
-
-                    {{ auth()->user()->name }}
-
-                </div>
-
+                <label>Nama</label>
+                <div class="profile-text">{{ auth()->user()->name }}</div>
             </div>
 
             <div class="profile-item">
-
-                <label>
-
-                    Email
-
-                </label>
-
-                <div class="profile-text">
-
-                    {{ auth()->user()->email }}
-
-                </div>
-
+                <label>Email</label>
+                <div class="profile-text">{{ auth()->user()->email }}</div>
             </div>
 
             <hr style="margin:24px 0; border:none; border-top:1px solid #e5e7eb;">
 
-           
-
-            <br>
-
-            <form method="POST"
-                  action="/profile/delete">
-
+            <form method="POST" action="{{ route('hapus.akun') }}">
                 @csrf
                 @method('DELETE')
-
-                <button type="submit"
-                        class="btn btn-red"
-                        onclick="return confirm('Yakin ingin menghapus akun?')">
-
+                <button type="submit" class="btn btn-red" onclick="return confirm('Yakin ingin menghapus akun?')">
                     Hapus Akun
-
                 </button>
-
             </form>
-
         </div>
-
     </div>
 
-    <!-- SCRIPT -->
     <script>
-
-        /*
-        ==========================================================
-        DATA TAHUNAN
-        ==========================================================
-        */
-
+        /* DATA TAHUNAN */
         const dataTahunan = {
-
             2024:[8,10,9,11,12,13,14,12,11,10,9,8],
-
             2025:[10,12,11,14,15,16,17,15,14,13,12,11],
-
             2026:[12,14,13,16,18,20,22,20,18,17,15,14],
-
             2027:[14,15,16,18,20,22,24,23,21,20,18,16],
-
             2028:[15,17,18,20,22,24,26,25,23,21,20,18],
-
             2029:[18,20,21,23,25,27,29,28,26,24,22,20]
-
         };
 
-        /*
-        ==========================================================
-        CHART
-        ==========================================================
-        */
-
-        const ctx =
-            document.getElementById('chartCuti');
-
-        let chart =
-            new Chart(ctx,
-        {
+        /* CHART INITIALIZATION */
+        const ctx = document.getElementById('chartCuti');
+        let chart = new Chart(ctx, {
             type:'bar',
-
-            data:
-            {
-                labels:
-                [
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'Mei',
-                    'Jun',
-                    'Jul',
-                    'Agu',
-                    'Sep',
-                    'Okt',
-                    'Nov',
-                    'Des'
-                ],
-
-                datasets:
-                [
-                    {
-                        label:'Jumlah Pengajuan',
-
-                        data:dataTahunan[2026],
-
-                        backgroundColor:
-                        [
-                            '#007A2F',
-                            '#008533',
-                            '#009137',
-                            '#00A843',
-                            '#14B84F',
-                            '#27C45A',
-                            '#39CF65',
-                            '#4BDA70',
-                            '#5CE37A',
-                            '#6EEB84',
-                            '#82F191',
-                            '#95F59D'
-                        ],
-
-                        borderRadius:14,
-                        borderSkipped:false,
-                        barThickness:32
-                    }
-                ]
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label:'Jumlah Pengajuan',
+                    data:dataTahunan[2026],
+                    backgroundColor: [
+                        '#007A2F', '#008533', '#009137', '#00A843',
+                        '#14B84F', '#27C45A', '#39CF65', '#4BDA70',
+                        '#5CE37A', '#6EEB84', '#82F191', '#95F59D'
+                    ],
+                    borderRadius:14,
+                    borderSkipped:false,
+                    barThickness:32
+                }]
             },
-
-            options:
-            {
+            options: {
                 responsive:true,
-
                 maintainAspectRatio:false,
-
-                animation:
-                {
-                    duration:1200
-                },
-
-                plugins:
-                {
-                    legend:
-                    {
-                        display:false
-                    },
-
-                    tooltip:
-                    {
+                animation: { duration:1200 },
+                plugins: {
+                    legend: { display:false },
+                    tooltip: {
                         backgroundColor:'#166534',
-
                         titleColor:'#fff',
-
                         bodyColor:'#fff',
-
                         cornerRadius:14,
-
                         padding:14,
-
-                        callbacks:
-                        {
+                        callbacks: {
                             label:function(context){
-
                                 return ' Total Pengajuan : ' + context.parsed.y;
-
                             }
                         }
                     }
                 },
-
-                scales:
-                {
-                    y:
-                    {
+                scales: {
+                    y: {
                         beginAtZero:true,
-
-                        ticks:
-                        {
-                            display:false
-                        },
-
-                        border:
-                        {
-                            display:false
-                        },
-
-                        grid:
-                        {
-                            color:'rgba(0,0,0,0.06)'
-                        }
+                        ticks: { display:false },
+                        border: { display:false },
+                        grid: { color:'rgba(0,0,0,0.06)' }
                     },
-
-                    x:
-                    {
-                        grid:
-                        {
-                            display:false
-                        }
-                    }
+                    x: { grid: { display:false } }
                 }
             }
         });
 
-        /*
-        ==========================================================
-        FILTER TAHUN
-        ==========================================================
-        */
-
-        document.getElementById('tahunFilter')
-        .addEventListener('change', function(){
-
-            const tahun =
-                this.value;
-
-            chart.data.datasets[0].data =
-                dataTahunan[tahun];
-
-            document.getElementById('judulChart')
-            .innerHTML =
-                'Statistik Pengajuan Cuti Tahun ' + tahun;
-
+        /* FILTER TAHUN */
+        document.getElementById('tahunFilter').addEventListener('change', function(){
+            const tahun = this.value;
+            chart.data.datasets[0].data = dataTahunan[tahun];
+            document.getElementById('judulChart').innerHTML = 'Statistik Pengajuan Cuti Tahun ' + tahun;
             chart.update();
-
         });
 
-        /*
-        ==========================================================
-        OPEN PANDUAN
-        ==========================================================
-        */
-
+        /* OPEN / CLOSE PANDUAN */
         function openPanduan(){
-
-            document.getElementById('overlay')
-            .style.display='block';
-
-            document.getElementById('panduanModal')
-            .style.display='block';
-
+            document.getElementById('overlay').style.display='block';
+            document.getElementById('panduanModal').style.display='block';
             document.body.style.overflow='hidden';
-
         }
-
-        /*
-        ==========================================================
-        CLOSE PANDUAN
-        ==========================================================
-        */
-
         function closePanduan(){
-
-            document.getElementById('overlay')
-            .style.display='none';
-
-            document.getElementById('panduanModal')
-            .style.display='none';
-
+            document.getElementById('overlay').style.display='none';
+            document.getElementById('panduanModal').style.display='none';
             document.body.style.overflow='auto';
-
         }
 
-        /*
-        ==========================================================
-        OPEN PROFILE
-        ==========================================================
-        */
-
+        /* OPEN / CLOSE PROFILE */
         function openProfile(){
-
-            document.getElementById('overlay')
-            .style.display='block';
-
-            document.getElementById('profileModal')
-            .style.display='block';
-
+            document.getElementById('overlay').style.display='block';
+            document.getElementById('profileModal').style.display='block';
             document.body.style.overflow='hidden';
-
         }
-
-        /*
-        ==========================================================
-        CLOSE PROFILE
-        ==========================================================
-        */
-
         function closeProfile(){
-
-            document.getElementById('overlay')
-            .style.display='none';
-
-            document.getElementById('profileModal')
-            .style.display='none';
-
+            document.getElementById('overlay').style.display='none';
+            document.getElementById('profileModal').style.display='none';
             document.body.style.overflow='auto';
-
         }
-
-        /*
-        ==========================================================
-        ESC CLOSE
-        ==========================================================
-        */
-
-        document.addEventListener('keydown',
-        function(event){
-
-            if(event.key === 'Escape'){
-
-                closePanduan();
-                closeProfile();
-
-            }
-
-        });
-
     </script>
-
 </body>
-
 </html>

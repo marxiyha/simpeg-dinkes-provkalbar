@@ -1,594 +1,228 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekapitulasi Dinas Luar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<meta charset="utf-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #00A843;
+            padding: 30px;
+            color: #1f2937;
+        }
 
-<title>Rekapitulasi Dinas Luar</title>
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-top: 8px solid #166534;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet">
+        .header h2 {
+            color: #166534;
+            font-size: 32px;
+            font-weight: 800;
+        }
 
-<style>
+        .header p {
+            color: #6b7280;
+            margin-top: 6px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        .filter-area {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin: 26px 0;
+        }
 
-body{
-    font-family:'Plus Jakarta Sans', sans-serif;
-    background:#00A843;
-    margin:0;
-    padding:30px;
-    color:#1f2937;
-}
+        .search-input, .filter-tahun {
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid #d1d5db;
+            outline: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: 0.3s;
+            background: white;
+        }
 
-/*
-|--------------------------------------------------------------------------
-| CONTAINER
-|--------------------------------------------------------------------------
-*/
+        .search-input {
+            width: 300px;
+        }
 
-.container{
-    background:white;
-    padding:30px;
-    border-radius:24px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
-    border-top:8px solid #00A843;
-}
+        .search-input:focus, .filter-tahun:focus {
+            border-color: #00A843;
+            box-shadow: 0 0 0 4px rgba(0, 168, 67, 0.15);
+        }
 
-/*
-|--------------------------------------------------------------------------
-| HEADER
-|--------------------------------------------------------------------------
-*/
+        .filter-tahun {
+            font-weight: 700;
+            cursor: pointer;
+        }
 
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:16px;
-    margin-bottom:28px;
-}
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid #e5e7eb;
+        }
 
-.header h2{
-    color:#166534;
-    font-size:32px;
-    font-weight:800;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
 
-.header p{
-    color:#6b7280;
-    margin-top:8px;
-    line-height:1.7;
-    font-size:14px;
-}
+        thead {
+            background: #dcfce7;
+        }
 
-/*
-|--------------------------------------------------------------------------
-| FILTER AREA
-|--------------------------------------------------------------------------
-*/
+        th {
+            padding: 18px;
+            text-align: left;
+            color: #166534;
+            font-size: 14px;
+            font-weight: 800;
+        }
 
-.filter-area{
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-    margin-bottom:26px;
-}
+        td {
+            padding: 18px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+            font-size: 14px;
+        }
 
-.search-input,
-.filter-tahun{
-    padding:14px 16px;
-    border-radius:14px;
-    border:1px solid #d1d5db;
-    outline:none;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    transition:0.3s;
-    background:white;
-}
+        tbody tr {
+            transition: 0.3s;
+        }
 
-.search-input{
-    width:280px;
-}
+        tbody tr:hover {
+            background: #f0fdf4;
+        }
 
-.search-input:focus,
-.filter-tahun:focus{
-    border-color:#00A843;
-    box-shadow:0 0 0 4px rgba(0,168,67,0.15);
-}
+        .empty-data {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+            font-weight: 600;
+        }
 
-.filter-tahun{
-    font-weight:700;
-    cursor:pointer;
-}
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 24px;
+            background: #166534;
+            color: white;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
 
-/*
-|--------------------------------------------------------------------------
-| TABLE
-|--------------------------------------------------------------------------
-*/
+        .btn-back:hover {
+            background: #0f4422;
+            transform: translateY(-2px);
+        }
 
-.table-wrapper{
-    overflow-x:auto;
-    border-radius:20px;
-    border:1px solid #e5e7eb;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:white;
-}
-
-thead{
-    background:#dcfce7;
-}
-
-th{
-    padding:18px;
-    text-align:left;
-    color:#166534;
-    font-size:14px;
-    font-weight:800;
-}
-
-td{
-    padding:18px;
-    border-bottom:1px solid #f1f5f9;
-    color:#374151;
-    font-size:14px;
-}
-
-tbody tr{
-    transition:0.3s;
-}
-
-tbody tr:hover{
-    background:#f0fdf4;
-}
-
-/*
-|--------------------------------------------------------------------------
-| BADGE
-|--------------------------------------------------------------------------
-*/
-
-.badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:#dcfce7;
-    color:#15803d;
-    padding:8px 14px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:700;
-}
-
-/*
-|--------------------------------------------------------------------------
-| EMPTY DATA
-|--------------------------------------------------------------------------
-*/
-
-.empty-data{
-    text-align:center;
-    color:#6b7280;
-    padding:30px;
-    font-weight:600;
-}
-
-/*
-|--------------------------------------------------------------------------
-| BUTTON
-|--------------------------------------------------------------------------
-*/
-
-.btn-back{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    margin-top:24px;
-    background:#00A843;
-    color:white;
-    text-decoration:none;
-    padding:14px 20px;
-    border-radius:14px;
-    font-weight:700;
-    transition:0.3s;
-}
-
-.btn-back:hover{
-    background:#008d38;
-    transform:translateY(-2px);
-}
-
-/*
-|--------------------------------------------------------------------------
-| RESPONSIVE
-|--------------------------------------------------------------------------
-*/
-
-@media(max-width:768px){
-
-    body{
-        padding:16px;
-    }
-
-    .container{
-        padding:20px;
-    }
-
-    .header{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .filter-area{
-        flex-direction:column;
-    }
-
-    .search-input,
-    .filter-tahun{
-        width:100%;
-    }
-
-    table{
-        font-size:13px;
-    }
-
-    th,
-    td{
-        padding:14px;
-    }
-
-    .header h2{
-        font-size:26px;
-    }
-
-}
-
-</style>
-
+        @media(max-width: 768px) {
+            body { padding: 16px; }
+            .container { padding: 20px; }
+            .search-input, .filter-tahun { width: 100%; }
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
-
-    <!-- HEADER -->
     <div class="header">
-
-        <div>
-
-            <h2>
-                Rekapitulasi Dinas Luar
-            </h2>
-
-            <p>
-                Halaman ini digunakan untuk melihat seluruh data kegiatan dinas luar pegawai berdasarkan tanggal, lokasi, dan keterangan kegiatan secara terintegrasi.
-            </p>
-
-        </div>
-
+        <h2>Rekapitulasi Dinas Luar</h2>
+        <p>Halaman rekap data dinas luar seluruh pegawai Dinas Kesehatan secara terintegrasi berdasarkan pencarian nama dan filter tahun.</p>
     </div>
 
-    <!-- FILTER -->
     <div class="filter-area">
+        <input type="text" id="searchInput" class="search-input" placeholder="Cari nama pegawai..." onkeyup="jalankanFilter()">
 
-        <!-- SEARCH -->
-        <input
-            type="text"
-            id="searchInput"
-            class="search-input"
-            placeholder="Cari nama pegawai..."
-            onkeyup="searchPegawai()"
-        >
-
-        <!-- FILTER TAHUN -->
-        <select
-            id="tahunFilter"
-            class="filter-tahun"
-            onchange="filterTahun()"
-        >
-
-            <option value="">
-                Semua Tahun
-            </option>
-
-            @for($i = 2024; $i <= 2029; $i++)
-
-                <option value="{{ $i }}">
-
-                    {{ $i }}
-
-                </option>
-
+        <select id="tahunFilter" class="filter-tahun" onchange="jalankanFilter()">
+            <option value="">Semua Tahun</option>
+            @for($i = 2024; $i <= 2026; $i++)
+                <option value="{{ $i }}">{{ $i }}</option>
             @endfor
-
         </select>
-
     </div>
 
-    <!-- TABLE -->
     <div class="table-wrapper">
-
         <table id="rekapTable">
-
             <thead>
-
                 <tr>
-
-                    <th>No</th>
-
+                    <th style="width: 60px;">No</th>
                     <th>Nama Pegawai</th>
-
                     <th>Tanggal Dinas</th>
-
                     <th>Lokasi</th>
-
                     <th>Keterangan</th>
-
-                    <th>Status</th>
-
                 </tr>
-
             </thead>
-
             <tbody>
-
-                <tr>
-
-                    <td>1</td>
-
-                    <td>
-                        Budi Santoso
-                    </td>
-
-                    <td class="tanggal">
-                        10-05-2026
-                    </td>
-
-                    <td>
-                        Jakarta
-                    </td>
-
-                    <td>
-                        Monitoring Puskesmas
-                    </td>
-
-                    <td>
-
-                        <span class="badge">
-
-                            Aktif
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
-                <tr>
-
-                    <td>2</td>
-
-                    <td>
-                        Dewi Kurnia
-                    </td>
-
-                    <td class="tanggal">
-                        15-05-2026
-                    </td>
-
-                    <td>
-                        Pontianak
-                    </td>
-
-                    <td>
-                        Survey Lapangan
-                    </td>
-
-                    <td>
-
-                        <span class="badge">
-
-                            Aktif
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
-                <tr>
-
-                    <td>3</td>
-
-                    <td>
-                        Andi Saputra
-                    </td>
-
-                    <td class="tanggal">
-                        12-07-2027
-                    </td>
-
-                    <td>
-                        Bandung
-                    </td>
-
-                    <td>
-                        Evaluasi Program
-                    </td>
-
-                    <td>
-
-                        <span class="badge">
-
-                            Aktif
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
-                <tr>
-
-                    <td>4</td>
-
-                    <td>
-                        Maria Grace
-                    </td>
-
-                    <td class="tanggal">
-                        20-08-2028
-                    </td>
-
-                    <td>
-                        Surabaya
-                    </td>
-
-                    <td>
-                        Kunjungan Dinas
-                    </td>
-
-                    <td>
-
-                        <span class="badge">
-
-                            Aktif
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
+                @forelse($dinasLuar as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td class="nama-pegawai">{{ $item->user->name ?? $item->nama_pegawai ?? 'Tidak Diketahui' }}</td>
+                        <td class="tanggal">{{ \Carbon\Carbon::parse($item->tanggal_dinas)->format('d-m-Y') }}</td>
+                        <td>{{ $item->lokasi }}</td>
+                        <td>{{ $item->keterangan }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="empty-data">
+                            Belum ada rekam data dinas luar pegawai yang tersimpan.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
-
         </table>
-
     </div>
 
-    <!-- BACK -->
-    <a href="{{ route('dashboard') }}"
-       class="btn-back">
-
+    <a href="{{ route('dashboard') }}" class="btn-back">
         ← Kembali ke Dashboard
-
     </a>
-
 </div>
 
 <script>
+function jalankanFilter() {
+    let inputSearch = document.getElementById('searchInput').value.toLowerCase();
+    let selectTahun = document.getElementById('tahunFilter').value;
+    let rows = document.querySelectorAll('#rekapTable tbody tr');
 
-/*
-|--------------------------------------------------------------------------
-| SEARCH PEGAWAI
-|--------------------------------------------------------------------------
-*/
+    rows.forEach(row => {
+        let namaCell = row.querySelector('.nama-pegawai');
+        let tanggalCell = row.querySelector('.tanggal');
 
-function searchPegawai()
-{
-    let input =
-        document.getElementById(
-            'searchInput'
-        );
+        if (namaCell && tanggalCell) {
+            let txtNama = namaCell.textContent || namaCell.innerText;
+            let txtTanggal = tanggalCell.textContent || tanggalCell.innerText;
 
-    let filter =
-        input.value.toLowerCase();
+            let cocokNama = txtNama.toLowerCase().indexOf(inputSearch) > -1;
+            let cocokTahun = selectTahun === '' || txtTanggal.endsWith(selectTahun);
 
-    let table =
-        document.getElementById(
-            'rekapTable'
-        );
-
-    let tr =
-        table.getElementsByTagName(
-            'tr'
-        );
-
-    for(let i = 1; i < tr.length; i++)
-    {
-        let td =
-            tr[i].getElementsByTagName(
-                'td'
-            )[1];
-
-        if(td)
-        {
-            let txtValue =
-                td.textContent ||
-                td.innerText;
-
-            if(
-                txtValue
-                .toLowerCase()
-                .indexOf(filter) > -1
-            )
-            {
-                tr[i].style.display = '';
-            }
-            else
-            {
-                tr[i].style.display = 'none';
-            }
-        }
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| FILTER TAHUN
-|--------------------------------------------------------------------------
-*/
-
-function filterTahun()
-{
-    let tahun =
-        document.getElementById(
-            'tahunFilter'
-        ).value;
-
-    let rows =
-        document.querySelectorAll(
-            '#rekapTable tbody tr'
-        );
-
-    rows.forEach(row =>
-    {
-        let tanggalCell =
-            row.querySelector('.tanggal');
-
-        if(tanggalCell)
-        {
-            let tanggal =
-                tanggalCell.innerText;
-
-            if(
-                tahun === '' ||
-                tanggal.includes(tahun)
-            )
-            {
+            if (cocokNama && cocokTahun) {
                 row.style.display = '';
-            }
-            else
-            {
+            } else {
                 row.style.display = 'none';
             }
         }
     });
 }
-
 </script>
 
 </body>
