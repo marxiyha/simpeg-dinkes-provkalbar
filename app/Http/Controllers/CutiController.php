@@ -3,102 +3,81 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Cuti;
 
 class CutiController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | HALAMAN APPROVAL CUTI
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * HALAMAN REKAP
+     */
+    public function rekap()
+    {
+        $data = Cuti::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->user->name ?? '-',
+                    'jenis_cuti' => $item->jenis_cuti ?? '-',
+                    'tanggal_mulai' => $item->tanggal_mulai ?? '-',
+                    'tanggal_selesai' => $item->tanggal_selesai ?? '-',
+                    'alasan_cuti' => $item->alasan ?? '-',
+                    'status' => $item->status ?? 'Pending',
+                ];
+            });
+
+        return view('cuti.rekap', compact('data'));
+    }
+
+    /**
+     * HALAMAN APPROVAL
+     */
     public function approval()
     {
-        if (!session()->has('cuti_data')) {
-            session([
-                'cuti_data' => [
-                    [
-                        'id' => 1,
-                        'nama' => 'Budi Santoso',
-                        'bidang' => 'Keuangan',
-                        'jenis_cuti' => 'Cuti Tahunan',
-                        'tanggal_mulai' => '2026-05-10',
-                        'tanggal_selesai' => '2026-05-15',
-                        'alasan_cuti' => 'Acara pernikahan keluarga',
-                        'status' => 'Pending',
-                    ],
-                    [
-                        'id' => 2,
-                        'nama' => 'Dewi Kurnia',
-                        'bidang' => 'Pelayanan',
-                        'jenis_cuti' => 'Cuti Besar',
-                        'tanggal_mulai' => '2026-05-20',
-                        'tanggal_selesai' => '2026-06-03',
-                        'alasan_cuti' => 'Ibadah umroh',
-                        'status' => 'Disetujui',
-                    ],
-                    [
-                        'id' => 3,
-                        'nama' => 'Andi Saputra',
-                        'bidang' => 'Administrasi',
-                        'jenis_cuti' => 'Cuti Sakit',
-                        'tanggal_mulai' => '2026-06-01',
-                        'tanggal_selesai' => '2026-06-03',
-                        'alasan_cuti' => 'Sakit DBD',
-                        'status' => 'Pending',
-                    ],
-                ]
-            ]);
-        }
-
-        $cuti = session('cuti_data');
+        $cuti = Cuti::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->user->name ?? '-',
+                    'jenis_cuti' => $item->jenis_cuti ?? '-',
+                    'tanggal_mulai' => $item->tanggal_mulai ?? '-',
+                    'tanggal_selesai' => $item->tanggal_selesai ?? '-',
+                    'alasan_cuti' => $item->alasan ?? '-',
+                    'status' => $item->status ?? 'Pending',
+                ];
+            });
 
         return view('cuti.approval', compact('cuti'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE STATUS CUTI
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * UPDATE STATUS (INI YANG BIKIN SIMPAN AMAN)
+     */
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required'
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|in:Pending,Disetujui,Ditolak'
+            ]);
 
-        $cuti = session('cuti_data', []);
+            $cuti = Cuti::findOrFail($id);
+            $cuti->status = $request->status;
+            $cuti->save();
 
-        foreach ($cuti as &$item) {
-            if ($item['id'] == $id) {
-                $item['status'] = $request->status;
-            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diperbarui'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        session(['cuti_data' => $cuti]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Status berhasil diperbarui'
-        ]);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | REKAP CUTI
-    |--------------------------------------------------------------------------
-    */
-    public function rekap(Request $request)
-    {
-        $tahun = $request->get('tahun', date('Y'));
-        $data = session('cuti_data', []);
-
-        $filtered = array_filter($data, function ($item) use ($tahun) {
-            return date('Y', strtotime($item['tanggal_mulai'])) == $tahun;
-        });
-
-        return view('cuti.rekap', [
-            'data' => $filtered,
-            'tahun' => $tahun
-        ]);
     }
 }

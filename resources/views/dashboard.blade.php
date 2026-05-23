@@ -640,20 +640,20 @@
                     Dashboard
                 </div>
 
-                <div class="menu-item" onclick="location.href='{{ route('petinggi.cuti.approval') }}'">
+                <div class="menu-item" onclick="location.href='{{ route('cuti.approval') }}'">
                     Persetujuan Cuti
                 </div>
 
-                <div class="menu-item" onclick="location.href='{{ route('petinggi.cuti.rekap') }}'">
-                    Rekap Cuti
+                <div class="menu-item" onclick="location.href='{{ route('cuti.rekap') }}'">
+                    Rekapitulasi Cuti
                 </div>
 
-                <div class="menu-item" onclick="location.href='{{ route('petinggi.kalender.index') }}'">
+                <div class="menu-item" onclick="location.href='{{ route('dinasluar.kalender') }}'">
                     Kalender Dinas Luar
                 </div>
 
-                <div class="menu-item" onclick="location.href='{{ route('petinggi.rekap_dinas.index') }}'">
-                    Rekap Dinas Luar
+                <div class="menu-item" onclick="location.href='{{ route('dinasluar.rekap') }}'">
+                    Rekapitulasi Kalender Dinas Luar
                 </div>
             </div>
         </div>
@@ -689,19 +689,19 @@
             </div>
 
             <div class="menu-grid">
-                <div class="card" onclick="location.href='{{ route('petinggi.cuti.approval') }}'">
+                <div class="card" onclick="location.href='{{ route('cuti.approval') }}'">
                     <h3>Persetujuan Cuti</h3>
                 </div>
 
-                <div class="card" onclick="location.href='{{ route('petinggi.cuti.rekap') }}'">
+                <div class="card" onclick="location.href='{{ route('cuti.rekap') }}'">
                     <h3>Rekapitulasi Cuti</h3>
                 </div>
 
-                <div class="card" onclick="location.href='{{ route('petinggi.kalender.index') }}'">
+                <div class="card" onclick="location.href='{{ route('dinasluar.kalender') }}'">
                     <h3>Kalender Dinas Luar</h3>
                 </div>
 
-                <div class="card" onclick="location.href='{{ route('petinggi.rekap_dinas.index') }}'">
+                <div class="card" onclick="location.href='{{ route('dinasluar.rekap') }}'">
                     <h3>Rekapitulasi Kalender Dinas Luar</h3>
                 </div>
             </div>

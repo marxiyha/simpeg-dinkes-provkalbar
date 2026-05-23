@@ -2,108 +2,88 @@
 <html lang="id">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Dinas Kesehatan Kalbar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Dinas Kesehatan Kalbar</title>
 
-<style>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial;}
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f3f4f6;
+        }
 
-body{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#f3f4f6;
-}
+        .box {
+            width: 420px;
+            background: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
 
-.box{
-    width:420px;
-    background:#fff;
-    padding:32px;
-    border-radius:12px;
-    border:1px solid #e5e7eb;
-    box-shadow:0 8px 25px rgba(0,0,0,0.08);
-}
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 { font-size: 18px; font-weight: 800; color: #111827; }
+        .header p { font-size: 13px; color: #6b7280; margin-top: 5px; }
 
-.header{
-    text-align:center;
-    margin-bottom:20px;
-}
+        label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-top: 12px; }
 
-.header h1{
-    font-size:16px;
-    font-weight:700;
-    color:#111827;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
 
-.header p{
-    font-size:13px;
-    color:#6b7280;
-    margin-top:5px;
-}
+        input:focus {
+            border-color: #00A843;
+            box-shadow: 0 0 0 3px rgba(0, 168, 67, 0.15);
+        }
 
-label{
-    font-size:13px;
-    font-weight:600;
-    color:#374151;
-}
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #00A843;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-input{
-    width:100%;
-    padding:11px;
-    margin-top:6px;
-    margin-bottom:12px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
-    outline:none;
-}
+        .btn:hover { background: #008d38; }
 
-input:focus{
-    border-color:#00A843;
-    box-shadow:0 0 0 3px rgba(0,168,67,0.15);
-}
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
 
-.btn{
-    width:100%;
-    padding:11px;
-    border:none;
-    border-radius:8px;
-    background:#00A843;
-    color:white;
-    font-weight:700;
-    cursor:pointer;
-}
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-size: 12px;
+        }
 
-.btn:hover{
-    background:#008d38;
-}
+        .links a { color: #00A843; text-decoration: none; font-weight: 600; }
+        .links a:hover { text-decoration: underline; }
 
-.links{
-    display:flex;
-    justify-content:space-between;
-    margin-top:14px;
-    font-size:12px;
-}
-
-.links a{
-    color:#00A843;
-    text-decoration:none;
-    font-weight:600;
-}
-
-.links a:hover{text-decoration:underline;}
-
-.footer{
-    text-align:center;
-    margin-top:18px;
-    font-size:11px;
-    color:#9ca3af;
-}
-
-</style>
-
+        .footer { text-align: center; margin-top: 24px; font-size: 11px; color: #9ca3af; }
+    </style>
 </head>
 
 <body>
@@ -115,21 +95,27 @@ input:focus{
         <p>Provinsi Kalimantan Barat</p>
     </div>
 
-    <form method="POST" action="{{ route('login') }}">
+    @if($errors->any())
+        <div class="error">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('login.post') }}">
         @csrf
 
         <label>Email</label>
-        <input type="email" name="email" required>
+        <input type="email" name="email" placeholder="contoh@email.com" required>
 
         <label>Password</label>
-        <input type="password" name="password" required>
+        <input type="password" name="password" placeholder="••••••••" required>
 
-        <button class="btn">LOGIN</button>
+        <button type="submit" class="btn">LOGIN</button>
     </form>
 
     <div class="links">
-        <a href="{{ url('/register') }}">Daftar</a>
-        <a href="{{ url('/forgot-password') }}">Lupa Password</a>
+        <a href="{{ url('/register') }}">Daftar Akun</a>
+        <a href="{{ url('/forgot-password') }}">Lupa Password?</a>
     </div>
 
     <div class="footer">

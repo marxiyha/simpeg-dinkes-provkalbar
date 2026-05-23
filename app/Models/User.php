@@ -13,13 +13,18 @@ class User extends Authenticatable
     /**
      * Field yang boleh diisi (mass assignment)
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'username',
-        'password',
-        'role',
-    ];
+    // app/Models/User.php
+protected $fillable = [
+    'name',
+    'username',
+    'email',
+    'password',
+    'role',
+    'otp_code',
+    'otp_expires_at',
+    'otp_last_sent_at',
+    'otp_attempts',
+];
 
     /**
      * Field yang disembunyikan saat return JSON / array

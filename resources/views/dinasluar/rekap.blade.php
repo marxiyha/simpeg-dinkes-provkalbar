@@ -156,7 +156,7 @@
 
         <select id="tahunFilter" class="filter-tahun" onchange="jalankanFilter()">
             <option value="">Semua Tahun</option>
-            @for($i = 2024; $i <= 2026; $i++)
+            @for($i = 2024; $i <= 2029; $i++)
                 <option value="{{ $i }}">{{ $i }}</option>
             @endfor
         </select>

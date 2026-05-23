@@ -283,7 +283,7 @@
         <div class="filter-area">
             <label for="tahunFilter">Tahun:</label>
             <select id="tahunFilter" class="filter-tahun">
-                @for($i = 2024; $i <= 2026; $i++)
+                @for($i = 2024; $i <= 2029; $i++)
                     <option value="{{ $i }}" {{ $i == 2026 ? 'selected' : '' }}>{{ $i }}</option>
                 @endfor
             </select>
