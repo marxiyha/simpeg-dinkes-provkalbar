@@ -6,620 +6,107 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | 1. REGISTER
-    |--------------------------------------------------------------------------
-    */
-
     public function register(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI REGISTER
-        |--------------------------------------------------------------------------
-        */
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-
-                'name' =>
-                    'required|string|max:255',
-
-                'username' =>
-                    'required|string|max:255|unique:users',
-
-                'email' =>
-                    'required|string|email|max:255|unique:users',
-
-                'password' =>
-                    'required|string|min:8|confirmed',
-            ]
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI GAGAL
-        |--------------------------------------------------------------------------
-        */
-
-        if ($validator->fails()) {
-
-            return back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE USER
-        |--------------------------------------------------------------------------
-        */
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
         $user = User::create([
-
-            'name' =>
-                $request->name,
-
-            'username' =>
-                $request->username,
-
-            'email' =>
-                $request->email,
-
-            'password' =>
-                Hash::make(
-                    $request->password
-                ),
-
-            /*
-            |--------------------------------------------------------------------------
-            | DEFAULT ROLE
-            |--------------------------------------------------------------------------
-            */
-
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
             'role' => 'pegawai',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOGIN USER
-        |--------------------------------------------------------------------------
-        */
-
         Auth::login($user);
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT
-        |--------------------------------------------------------------------------
-        */
-
-        return redirect()
-            ->route('dashboard')
-            ->with(
-                'success',
-                'Akun berhasil dibuat!'
-            );
+        return redirect()->route('dashboard');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 2. LOGIN + GENERATE OTP
-    |--------------------------------------------------------------------------
-    */
 
     public function login(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI LOGIN
-        |--------------------------------------------------------------------------
-        */
+        $request->validate(['email' => 'required|email', 'password' => 'required']);
+        $user = User::where('email', $request->email)->first();
 
-        $credentials = $request->validate([
-
-            'email' =>
-                'required|email',
-
-            'password' =>
-                'required',
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOGIN AWAL
-        |--------------------------------------------------------------------------
-        */
-
-        if (Auth::attempt($credentials)) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | AMBIL USER
-            |--------------------------------------------------------------------------
-            */
-
-            $user = Auth::user();
-
-            /*
-            |--------------------------------------------------------------------------
-            | GENERATE OTP 6 DIGIT
-            |--------------------------------------------------------------------------
-            */
-
-            $otp = random_int(
-                100000,
-                999999
-            );
-
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN OTP KE DATABASE
-            |--------------------------------------------------------------------------
-            */
-
-            $user->update([
-
-                'otp_code' => $otp,
-
-                'otp_expires_at' =>
-                    now()->addMinutes(5),
-
-                'otp_last_sent_at' =>
-                    now(),
-
-                'otp_attempts' => 0
-            ]);
-
-            /*
-            |--------------------------------------------------------------------------
-            | LOG OTP
-            |--------------------------------------------------------------------------
-            */
-
-            Log::info(
-                '================ OTP LOGIN ================'
-            );
-
-            Log::info(
-                'EMAIL : ' .
-                $user->email
-            );
-
-            Log::info(
-                'OTP : ' .
-                $otp
-            );
-
-            Log::info(
-                'EXPIRED : ' .
-                now()->addMinutes(5)
-            );
-
-            Log::info(
-                '==========================================='
-            );
-
-            /*
-            |--------------------------------------------------------------------------
-            | LOGOUT SEMENTARA
-            |--------------------------------------------------------------------------
-            */
-
-            Auth::logout();
-
-            /*
-            |--------------------------------------------------------------------------
-            | SESSION OTP
-            |--------------------------------------------------------------------------
-            */
-
-            session([
-
-                'otp_user_id' =>
-                    $user->id
-            ]);
-
-            /*
-            |--------------------------------------------------------------------------
-            | REDIRECT OTP
-            |--------------------------------------------------------------------------
-            */
-
-            return redirect()
-                ->route('otp.form')
-                ->with(
-
-                    'success',
-
-                    'Kode OTP berhasil dikirim'
-                );
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['email' => 'Email atau password salah.']);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOGIN GAGAL
-        |--------------------------------------------------------------------------
-        */
-
-        return back()->withErrors([
-
-            'email' =>
-                'Email atau password tidak cocok.'
+        $otp = random_int(100000, 999999);
+        $user->update([
+            'otp_code' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
         ]);
+
+        Log::info("OTP untuk {$user->email}: {$otp}");
+
+        Auth::logout();
+        session(['otp_user_id' => $user->id]);
+
+        return redirect()->route('otp.form');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 3. FORM OTP
-    |--------------------------------------------------------------------------
-    */
-
+    // FUNGSI YANG DICARI ROUTE
     public function otpForm()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | CEK SESSION OTP
-        |--------------------------------------------------------------------------
-        */
-
-        if (!session('otp_user_id')) {
-
-            return redirect('/login');
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | VIEW OTP
-        |--------------------------------------------------------------------------
-        */
-
+        if (!session()->has('otp_user_id')) return redirect()->route('login');
         return view('layouts.otp');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 4. VERIFY OTP
-    |--------------------------------------------------------------------------
-    */
+    // FUNGSI YANG DICARI ROUTE
+    public function resendOtp()
+    {
+        $userId = session('otp_user_id');
+        if (!$userId) return redirect()->route('login');
+
+        $user = User::find($userId);
+        $otp = random_int(100000, 999999);
+        
+        $user->update([
+            'otp_code' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
+
+        Log::info("OTP Baru untuk {$user->email}: {$otp}");
+        return back()->with('success', 'Kode OTP baru telah dikirim.');
+    }
 
     public function verifyOtp(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI OTP
-        |--------------------------------------------------------------------------
-        */
+        $request->validate(['otp' => 'required|digits:6']);
+        $user = User::find(session('otp_user_id'));
 
-        $request->validate([
-
-            'otp' =>
-                'required|digits:6'
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL USER DARI SESSION
-        |--------------------------------------------------------------------------
-        */
-
-        $user = User::find(
-            session('otp_user_id')
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | USER TIDAK ADA
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$user) {
-
-            return redirect('/login');
+        if (!$user || (string)$user->otp_code !== (string)$request->otp || now()->greaterThan($user->otp_expires_at)) {
+            return back()->withErrors(['otp' => 'OTP salah atau kadaluwarsa.']);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | LIMIT SALAH OTP
-        |--------------------------------------------------------------------------
-        */
-
-        if ($user->otp_attempts >= 3) {
-
-            return back()->withErrors([
-
-                'otp' =>
-                    'Terlalu banyak percobaan OTP'
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | OTP TIDAK ADA
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$user->otp_code) {
-
-            return back()->withErrors([
-
-                'otp' =>
-                    'Tidak ada OTP aktif'
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | OTP EXPIRED
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-
-            now()->greaterThan(
-                $user->otp_expires_at
-            )
-
-        ) {
-
-            $user->update([
-
-                'otp_code' => null
-            ]);
-
-            return back()->withErrors([
-
-                'otp' =>
-                    'OTP sudah kadaluwarsa'
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | OTP SALAH
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-
-            (string)$user->otp_code !==
-            (string)$request->otp
-
-        ) {
-
-            $user->increment(
-                'otp_attempts'
-            );
-
-            return back()->withErrors([
-
-                'otp' =>
-                    'Kode OTP salah'
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | OTP VALID
-        |--------------------------------------------------------------------------
-        */
-
-        /*
-        |--------------------------------------------------------------------------
-        | HAPUS OTP
-        |--------------------------------------------------------------------------
-        */
-
-        $user->update([
-
-            'otp_code' => null,
-
-            'otp_expires_at' => null,
-
-            'otp_attempts' => 0
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOGIN ASLI
-        |--------------------------------------------------------------------------
-        */
-
+        $user->update(['otp_code' => null]);
         Auth::login($user);
+        session()->forget('otp_user_id');
 
-        /*
-        |--------------------------------------------------------------------------
-        | HAPUS SESSION OTP
-        |--------------------------------------------------------------------------
-        */
-
-        session()->forget(
-            'otp_user_id'
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT DASHBOARD
-        |--------------------------------------------------------------------------
-        */
-
-        return redirect()
-            ->route('dashboard')
-            ->with(
-
-                'success',
-
-                'Login berhasil!'
-            );
+        return redirect()->route('dashboard');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 5. RESEND OTP
-    |--------------------------------------------------------------------------
-    */
-
-    public function resendOtp()
+    public function updatePassword(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL USER
-        |--------------------------------------------------------------------------
-        */
-
-        $user = User::find(
-            session('otp_user_id')
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | USER TIDAK ADA
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$user) {
-
-            return redirect('/login');
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | COOLDOWN 30 DETIK
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-
-            $user->otp_last_sent_at &&
-
-            now()->diffInSeconds(
-                $user->otp_last_sent_at
-            ) < 30
-
-        ) {
-
-            return back()->withErrors([
-
-                'otp' =>
-                    'Tunggu 30 detik sebelum resend OTP'
-            ]);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | GENERATE OTP BARU
-        |--------------------------------------------------------------------------
-        */
-
-        $otp = random_int(
-            100000,
-            999999
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE OTP
-        |--------------------------------------------------------------------------
-        */
-
-        $user->update([
-
-            'otp_code' => $otp,
-
-            'otp_expires_at' =>
-                now()->addMinutes(5),
-
-            'otp_last_sent_at' =>
-                now(),
-
-            'otp_attempts' => 0
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOG OTP BARU
-        |--------------------------------------------------------------------------
-        */
-
-        Log::info(
-            '============== RESEND OTP ================='
-        );
-
-        Log::info(
-            'EMAIL : ' .
-            $user->email
-        );
-
-        Log::info(
-            'OTP BARU : ' .
-            $otp
-        );
-
-        Log::info(
-            '==========================================='
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT
-        |--------------------------------------------------------------------------
-        */
-
-        return back()->with(
-
-            'success',
-
-            'OTP baru berhasil dikirim'
-        );
+        $request->validate(['email' => 'required|email|exists:users,email', 'password' => 'required|min:8|confirmed']);
+        User::where('email', $request->email)->update(['password' => Hash::make($request->password)]);
+        return redirect()->route('login')->with('success', 'Password berhasil diubah.');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 6. LOGOUT
-    |--------------------------------------------------------------------------
-    */
 
     public function logout(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | LOGOUT
-        |--------------------------------------------------------------------------
-        */
-
         Auth::logout();
-
-        /*
-        |--------------------------------------------------------------------------
-        | INVALIDATE SESSION
-        |--------------------------------------------------------------------------
-        */
-
-        $request->session()
-                ->invalidate();
-
-        /*
-        |--------------------------------------------------------------------------
-        | REGENERATE TOKEN
-        |--------------------------------------------------------------------------
-        */
-
-        $request->session()
-                ->regenerateToken();
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT LOGIN
-        |--------------------------------------------------------------------------
-        */
-
-        return redirect('/login');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login');
     }
 }
