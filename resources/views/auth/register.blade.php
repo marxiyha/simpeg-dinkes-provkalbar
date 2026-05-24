@@ -1,51 +1,78 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-
-<title>Register</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Dinas Kesehatan Kalbar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial; }
+        body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #f3f4f6; }
+        .box { width: 420px; background: #fff; padding: 32px; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 18px; font-weight: 700; color: #111827; }
+        .header p { font-size: 13px; color: #6b7280; }
+        
+        /* Error Message Style */
+        .error-box { background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 15px; }
+        
+        label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-top: 10px; }
+        input { width: 100%; padding: 11px; margin-top: 4px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; }
+        input:focus { border-color: #00A843; box-shadow: 0 0 0 3px rgba(0,168,67,0.15); }
+        
+        .btn { width: 100%; padding: 12px; margin-top: 20px; background: #00A843; border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; }
+        .btn:hover { background: #008d38; }
+        
+        .links { text-align: center; margin-top: 14px; font-size: 12px; }
+        .links a { color: #00A843; font-weight: 600; text-decoration: none; }
+        .footer { text-align: center; margin-top: 18px; font-size: 11px; color: #9ca3af; }
+    </style>
 </head>
+<body>
 
-<body class="bg-green-100 flex items-center justify-center h-screen">
+<div class="box">
+    <div class="header">
+        <h1>REGISTRASI AKUN</h1>
+        <p>Dinas Kesehatan Provinsi Kalimantan Barat</p>
+    </div>
 
-<div class="bg-white p-10 rounded-3xl shadow-2xl w-[500px]">
+    @if ($errors->any())
+        <div class="error-box">
+            <ul style="list-style: none;">
+                @foreach ($errors->all() as $error)
+                    <li>• {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-<h1 class="text-4xl font-bold text-center text-green-700 mb-8">
-REGISTER
-</h1>
+    <form method="POST" action="{{ route('register.post') }}">
+        @csrf
 
-<form>
+        <label>Nama Lengkap</label>
+        <input type="text" name="name" value="{{ old('name') }}" required>
 
-<input
-type="text"
-placeholder="Username"
-class="w-full border p-4 rounded-xl mb-4">
+        <label>Username</label>
+        <input type="text" name="username" value="{{ old('username') }}" required>
 
-<input
-type="email"
-placeholder="Email"
-class="w-full border p-4 rounded-xl mb-4">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ old('email') }}" required>
 
-<input
-type="password"
-placeholder="Password"
-class="w-full border p-4 rounded-xl mb-4">
+        <label>Password</label>
+        <input type="password" name="password" required>
 
-<input
-type="password"
-placeholder="Konfirmasi Password"
-class="w-full border p-4 rounded-xl mb-4">
+        <label>Konfirmasi Password</label>
+        <input type="password" name="password_confirmation" required>
 
-<button
-class="w-full bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl">
-Daftar
-</button>
+        <button type="submit" class="btn">DAFTAR</button>
+    </form>
 
-</form>
+    <div class="links">
+        Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
+    </div>
 
+    <div class="footer">
+        © {{ date('Y') }} Dinas Kesehatan Kalbar
+    </div>
 </div>
 
 </body>

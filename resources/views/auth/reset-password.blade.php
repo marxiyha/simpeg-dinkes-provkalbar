@@ -1,35 +1,45 @@
-<x-guest-layout>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Reset Password</title>
+</head>
+<body>
 
-<h1>LUPA PASSWORD</h1>
+    <h2>Reset Password</h2>
 
-<form method="POST" action="{{ route('password.store') }}">
-    @csrf
+    <form method="POST" action="{{ route('password.update') }}">
+        @csrf
 
-    <input type="email"
-           name="email"
-           placeholder="Masukkan Email"
-           required>
+        <!-- TOKEN WAJIB -->
+        <input type="hidden" name="token" value="{{ $token }}">
 
-    <input type="password"
-           name="password"
-           placeholder="Password Baru"
-           required>
+        <!-- EMAIL -->
+        <div>
+            <label>Email</label><br>
+            <input type="email" name="email" value="{{ $email }}" required>
+        </div>
 
-    <input type="password"
-           name="password_confirmation"
-           placeholder="Konfirmasi Password"
-           required>
+        <br>
 
-    <button type="submit">
-        KIRIM
-    </button>
+        <!-- PASSWORD BARU -->
+        <div>
+            <label>Password Baru</label><br>
+            <input type="password" name="password" required>
+        </div>
 
-    <div class="text-center mt-3">
-        <a href="{{ route('login') }}">
-            Kembali Login
-        </a>
-    </div>
+        <br>
 
-</form>
+        <!-- KONFIRMASI PASSWORD -->
+        <div>
+            <label>Konfirmasi Password</label><br>
+            <input type="password" name="password_confirmation" required>
+        </div>
 
-</x-guest-layout>
+        <br>
+
+        <button type="submit">Reset Password</button>
+    </form>
+
+</body>
+</html>

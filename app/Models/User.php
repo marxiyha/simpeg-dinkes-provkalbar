@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -13,48 +11,56 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Field yang boleh diisi
+     * Field yang boleh diisi (mass assignment)
      */
-
-    protected $fillable = [
-
-        'username',
-
-        'name',
-
-        'email',
-
-        'password',
-
-        'role',
-
-        'is_active',
-    ];
+    // app/Models/User.php
+protected $fillable = [
+    'name',
+    'username',
+    'email',
+    'password',
+    'role',
+    'otp_code',
+    'otp_expires_at',
+    'otp_last_sent_at',
+    'otp_attempts',
+];
 
     /**
-     * Hidden field
+     * Field yang disembunyikan saat return JSON / array
      */
-
     protected $hidden = [
-
         'password',
-
         'remember_token',
     ];
 
     /**
-     * Casting
+     * Cast otomatis untuk tipe data
      */
+    protected $casts = [
+    'email_verified_at' => 'datetime',
+   // 'password' => 'hashed', // 🔥 HAPUS ATAU KOMENTARI BARIS INI
+];
 
-    protected function casts(): array
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE HELPER
+    |--------------------------------------------------------------------------
+    | Mempermudah pengecekan role di controller / blade
+    */
+
+    public function isPetinggi(): bool
     {
-        return [
+        return $this->role === 'petinggi';
+    }
 
-            'email_verified_at' => 'datetime',
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
-            'password' => 'hashed',
-
-            'is_active' => 'boolean',
-        ];
+    public function isPegawai(): bool
+    {
+        return $this->role === 'pegawai';
     }
 }
