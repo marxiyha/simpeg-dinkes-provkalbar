@@ -1,254 +1,109 @@
-
-
-
-
-
 @extends('layouts.app')
 
 @section('title', 'Dashboard Super Admin')
 
-@section('page-title', 'Dashboard Super Admin')
-
 @section('content')
 
-<!-- HEADER -->
-<div class="flex justify-between items-center mb-8">
+<style>
+    :root { --primary: #059669; --bg: #f8fafc; --text: #1e293b; }
+    .dashboard-container { padding: 32px; font-family: 'Inter', sans-serif; background-color: var(--bg); min-height: 100vh; }
+    
+    /* Header Panel */
+    .header-panel { background: white; padding: 32px; border-radius: 24px; margin-bottom: 32px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .header-panel h1 { font-size: 28px; color: #064e3b; margin: 0; font-weight: 800; }
+    
+    /* Menu Grid */
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px; }
+    .menu-card { background: white; padding: 24px; border-radius: 20px; border: 1px solid #e2e8f0; transition: all 0.3s ease; text-decoration: none; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .menu-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .menu-card h3 { color: var(--primary); margin-top: 0; }
+    
+    /* Chart Box */
+    .chart-box { background: white; padding: 32px; border-radius: 24px; border: 1px solid #e2e8f0; }
+    .select-tahun { padding: 10px 20px; border-radius: 12px; border: 1px solid #cbd5e1; font-weight: 600; color: var(--primary); cursor: pointer; }
+    
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: white; width: 90%; max-width: 700px; padding: 40px; border-radius: 24px; max-height: 80vh; overflow-y: auto; }
+</style>
 
-    <div>
-        <h1 class="text-4xl font-bold text-green-700">
-            Dashboard Admin
-        </h1>
-
-        <p class="text-gray-600">
-            Sistem Dinas Kesehatan & 4 UPT
-        </p>
+<div class="dashboard-container">
+    <div class="header-panel">
+        <div>
+            <h1>Dashboard Super Admin</h1>
+            <p style="color: #64748b; margin-top: 5px;">Sistem Pengawasan Kepegawaian Internal</p>
+        </div>
+        <button onclick="toggleModal(true)" style="background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">📘 Panduan Sistem</button>
     </div>
 
-    <!-- QUICK ACTION BUTTON -->
-    <div class="flex gap-3">
-
-        <!-- MENU KE DATA UPT -->
-        <a href="/upt"
-           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl shadow">
-
-            + Tambah UPT
-
-        </a>
-
-        <!-- MENU KE DATA DINKES -->
-        <a href="/dinkes"
-           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl shadow">
-
-            + Tambah Dinkes
-
-        </a>
-
-        <!-- EXPORT -->
-        <a href="/export"
-           class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl shadow">
-
-            Export Data
-
-        </a>
-
+    <div class="menu-grid">
+        <a href="/dinkes" class="menu-card"><h3>🏥 Data Dinas Kesehatan</h3></a>
+        <a href="/upt" class="menu-card"><h3>🏢 Data Unit Pelaksana Teknis</h3></a>
+        <a href="/kalender" class="menu-card"><h3>📅 Kalender Kedinasan</h3></a>
+        <a href="/users" class="menu-card"><h3>👥 Manajemen Pengguna</h3></a>
     </div>
 
-</div>
-
-<!-- STATISTIK CLICKABLE -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-
-    <!-- DINKES -->
-    <a href="/dinkes"
-       class="bg-white p-6 rounded-3xl shadow hover:shadow-xl transition block">
-
-        <h2 class="font-bold text-gray-700">
-            Dinas Kesehatan
-        </h2>
-
-        <p class="text-5xl font-bold text-green-700">
-            {{ $dinkes ?? 0 }}
-        </p>
-
-        <p class="text-sm text-gray-500 mt-2">
-            Klik untuk detail
-        </p>
-
-    </a>
-
-    <!-- UPT -->
-    <a href="/upt"
-       class="bg-white p-6 rounded-3xl shadow hover:shadow-xl transition block">
-
-        <h2 class="font-bold text-gray-700">
-            4 UPT
-        </h2>
-
-        <p class="text-5xl font-bold text-green-700">
-            {{ $totalUpt ?? 0 }}
-        </p>
-
-        <p class="text-sm text-gray-500 mt-2">
-            Klik untuk detail
-        </p>
-
-    </a>
-
-    <!-- REKAP -->
-    <a href="/rekapitulasi"
-       class="bg-white p-6 rounded-3xl shadow hover:shadow-xl transition block">
-
-        <h2 class="font-bold text-gray-700">
-            Rekapitulasi
-        </h2>
-
-        <p class="text-5xl font-bold text-green-700">
-            {{ ($dinkes ?? 0) + ($totalUpt ?? 0) }}
-        </p>
-
-        <p class="text-sm text-gray-500 mt-2">
-            Klik untuk lihat rekap
-        </p>
-
-    </a>
-
-</div>
-
-<!-- GRAFIK -->
-<div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
-
-    <!-- GRAFIK PEGAWAI -->
-    <div class="bg-white p-6 rounded-3xl shadow">
-
-        <h2 class="text-xl font-bold text-green-700 mb-5">
-            Pegawai Dinkes vs UPT
-        </h2>
-
-        <canvas id="pegawaiChart"></canvas>
-
+    <div class="chart-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 style="margin: 0;">Statistik Pengajuan Cuti</h2>
+            <select id="tahunFilter" class="select-tahun" onchange="updateChart()">
+                @for($y = 2024; $y <= 2029; $y++) <option value="{{$y}}" {{$y==2026?'selected':''}}>{{$y}}</option> @endfor
+            </select>
+        </div>
+        <div style="height: 300px;"><canvas id="cutiChart"></canvas></div>
     </div>
+</div>
 
-    <!-- GRAFIK CUTI -->
-    <div class="bg-white p-6 rounded-3xl shadow">
+<div id="modalPanduan" class="modal-overlay">
+    <div class="modal-content">
+        <h2 style="color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">Panduan Operasional Super Admin</h2>
+        
+        <div style="line-height: 1.7; color: #334155; font-size: 14px; text-align: justify;">
+            <p><strong>Selamat Datang, Super Admin.</strong> Anda memegang kendali penuh sebagai pengawas utama sistem. Berikut adalah deskripsi mendalam mengenai tanggung jawab dan alur kerja pada setiap modul:</p>
+            
+            <div class="guide-item">
+                <h3 style="margin: 15px 0 5px 0; color: #064e3b;">🏥 Data Dinas Kesehatan</h3>
+                <p>Modul ini berfungsi sebagai pusat monitoring data induk pegawai. Anda memiliki akses untuk memantau integritas data kepegawaian yang diinput oleh Operator. Pastikan data yang tersaji selalu akurat, mutakhir, dan sesuai dengan dokumen fisik yang ada.</p>
+            </div>
 
-        <h2 class="text-xl font-bold text-green-700 mb-5">
-            Status Cuti
-        </h2>
+            <div class="guide-item">
+                <h3 style="margin: 15px 0 5px 0; color: #064e3b;">🏢 Data Unit Pelaksana Teknis (UPT)</h3>
+                <p>Tanggung jawab pemantauan operasional mencakup empat UPT utama: UPT Sungai Bangkong, UPT Pratama, UPT Labkes, dan UPT Pelatihan. Anda bertindak sebagai supervisor untuk memastikan seluruh data inputan dari masing-masing UPT memenuhi standar administrasi yang ditetapkan instansi.</p>
+            </div>
 
-        <canvas id="cutiChart"></canvas>
+        
 
+            <div class="guide-item">
+                <h3 style="margin: 15px 0 5px 0; color: #064e3b;">📅 Kalender Kedinasan</h3>
+                <p>Fitur ini memvisualisasikan seluruh agenda kedinasan dan perjalanan dinas pegawai. Super Admin bertugas memantau jadwal agar tidak terjadi tumpang tindih agenda (<em>scheduling conflict</em>) yang dapat mengganggu pelayanan publik instansi.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3 style="margin: 15px 0 5px 0; color: #064e3b;">👥 Manajemen Pengguna</h3>
+                <p>Pusat kendali akun sistem. Anda memiliki otoritas penuh untuk:
+                    <ul style="margin: 5px 0; padding-left: 20px;">
+                        <li><strong>Registrasi:</strong> Membuat kredensial akun baru bagi staf yang baru bergabung.</li>
+                        <li><strong>Penetapan Peran (Role):</strong> Mengatur hirarki akses pengguna antara Pegawai, Operator, Petinggi, dan Admin.</li>
+                        <li><strong>Audit:</strong> Melakukan pembersihan akun untuk menjaga keamanan sistem dari akses pihak yang tidak berwenang.</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <button onclick="toggleModal(false)" style="margin-top: 25px; width:100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Tutup Panduan dan Lanjutkan</button>
     </div>
-
 </div>
-
-<!-- QUICK ACTION PANEL -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-
-    <!-- CUTI -->
-    <a href="/cuti"
-       class="bg-white p-5 rounded-2xl shadow hover:bg-green-50 transition">
-
-        📄 Pengajuan Cuti
-
-    </a>
-
-    <!-- KALENDER -->
-    <a href="/kalender"
-       class="bg-white p-5 rounded-2xl shadow hover:bg-green-50 transition">
-
-        📅 Kalender Dinas
-
-    </a>
-
-    <!-- USER -->
-    <a href="/users"
-       class="bg-white p-5 rounded-2xl shadow hover:bg-green-50 transition">
-
-        👥 Manajemen User
-
-    </a>
-
-
-</div>
-
-@endsection
-
-@push('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    // =======================
-    // GRAFIK PEGAWAI
-    // =======================
-
-    new Chart(document.getElementById('pegawaiChart'), {
-
+    const dataCuti = { 2024:[5,8,4,11,7,14,9,12,6,10,5,7], 2025:[9,11,7,13,10,16,12,14,9,11,8,10], 2026:[12,15,11,18,14,22,16,19,13,17,11,14], 2027:[14,16,13,19,16,24,18,21,15,18,12,15], 2028:[15,18,14,21,18,26,20,23,17,20,14,17], 2029:[18,20,16,24,20,28,22,25,19,22,16,20] };
+    let chart = new Chart(document.getElementById('cutiChart'), {
         type: 'bar',
-
-        data: {
-
-            labels: ['Dinkes', '4 UPT'],
-
-            datasets: [{
-
-                label: 'Pegawai',
-
-                data: [
-                    {{ $dinkes ?? 0 }},
-                    {{ $totalUpt ?? 0 }}
-                ],
-
-                backgroundColor: [
-                    '#15803d',
-                    '#22c55e'
-                ]
-
-            }]
-        }
-
+        data: { labels: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'], datasets: [{ data: dataCuti[2026], backgroundColor: '#059669', borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
     });
-
-    // =======================
-    // GRAFIK CUTI
-    // =======================
-
-    new Chart(document.getElementById('cutiChart'), {
-
-        type: 'pie',
-
-        data: {
-
-            labels: [
-                'Disetujui',
-                'Ditolak',
-                'Menunggu'
-            ],
-
-            datasets: [{
-
-                data: [
-                    {{ $cuti['disetujui'] ?? 0 }},
-                    {{ $cuti['ditolak'] ?? 0 }},
-                    {{ $cuti['menunggu'] ?? 0 }}
-                ],
-
-                backgroundColor: [
-                    '#16a34a',
-                    '#dc2626',
-                    '#eab308'
-                ]
-
-            }]
-        }
-
-    });
-
-});
-
+    function updateChart() { chart.data.datasets[0].data = dataCuti[document.getElementById('tahunFilter').value]; chart.update(); }
+    function toggleModal(show) { document.getElementById('modalPanduan').style.display = show ? 'flex' : 'none'; }
 </script>
 
-@endpush
+@endsection

@@ -9,16 +9,30 @@ class PegawaiUPT extends Model
 {
     use HasFactory;
 
-    protected $table = 'pegawai_dinkes';
+    /**
+     * Nama tabel di database.
+     * Pastikan nama ini sama persis dengan yang ada di phpMyAdmin.
+     */
+    protected $table = 'pegawai_upt';
 
+    /**
+     * Kolom-kolom yang boleh diisi (Mass Assignable).
+     * Sesuaikan array ini dengan kolom yang ada di tabel Anda.
+     */
     protected $fillable = [
-        'nip',
         'nama_pegawai',
-        'jenis_kelamin',
-        'pendidikan',
+        'email',
+        'nip',
+        'upt_unit',
         'jabatan',
         'status_pegawai',
-        'tmt_pensiun',
-        'batas_usia_pensiun',
+        'jenis_kelamin',
+        'tanggal_lahir'
     ];
+
+    /**
+     * Jika Anda tidak menggunakan timestamps (created_at, updated_at),
+     * set variabel ini ke false. Jika menggunakan, hapus baris di bawah ini.
+     */
+    public $timestamps = true;
 }

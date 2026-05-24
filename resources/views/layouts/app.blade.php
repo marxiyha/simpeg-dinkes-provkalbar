@@ -84,13 +84,7 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="/rekapitulasi"
-                       class="block px-4 py-3 rounded-xl
-                       {{ request()->is('rekap*') ? 'bg-green-600 font-bold' : 'hover:bg-green-600' }}">
-                        Rekapitulasi
-                    </a>
-                </li>
+            
 
                 <li>
                     <a href="/export"
@@ -136,7 +130,7 @@
                 </h2>
 
                 <p class="text-sm text-gray-500">
-                    Sistem Informasi Kepegawaian Dinkes
+                    Sistem Informasi Kepegawaian Dinas Kesehatan
                 </p>
             </div>
 
@@ -182,7 +176,7 @@
         </main>
 
         <footer class="bg-white border-t px-8 py-4 text-sm text-gray-500">
-            © {{ date('Y') }} Sistem Informasi Super Admin Dinkes
+            © {{ date('Y') }} Sistem Informasi Super Admin Dinas Kesehatan Provinsi Kalimantan Barat
         </footer>
 
     </div>
