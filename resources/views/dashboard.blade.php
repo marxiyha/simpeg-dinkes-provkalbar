@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Super Admin')
+@section('title', 'Dashboard Super Admin SI-REKAP')
 
 @section('content')
 
@@ -33,8 +33,8 @@
     {{-- Header Section --}}
     <div class="header-panel">
         <div>
-            <h1>Dashboard Super Admin</h1>
-            <p style="color: #64748b; margin-top: 5px;">Sistem Pengawasan Kepegawaian Internal</p>
+            <h1>Dashboard Super Admin SI-REKAP</h1>
+            <p style="color: #64748b; margin-top: 5px;">Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</p>
         </div>
         <button onclick="toggleModal(true)" style="background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer;">
             📘 Panduan Sistem

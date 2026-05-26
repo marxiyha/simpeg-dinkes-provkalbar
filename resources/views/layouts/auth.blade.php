@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>SUPER ADMIN DINKES</title>
+    <title>SUPER ADMIN SI-REKAP</title>
 
     @vite(['resources/css/app.css','resources/js/app.js'])
 

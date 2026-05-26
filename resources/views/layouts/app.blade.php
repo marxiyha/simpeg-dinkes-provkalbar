@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
-        @yield('title', 'Super Admin Dinkes')
+        @yield('title', 'Super Admin SI-REKAP')
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,8 +29,8 @@
     <aside class="w-72 bg-green-700 text-white fixed h-screen overflow-y-auto shadow-2xl">
 
         <div class="p-6 border-b border-green-600">
-            <h1 class="text-3xl font-bold">SUPER ADMIN</h1>
-            <p class="text-sm text-green-100 mt-2">Sistem Informasi Dinkes</p>
+            <h1 class="text-3xl font-bold">SUPER ADMIN SI-REKAP</h1>
+            <p class="text-sm text-green-100 mt-2">Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</p>
         </div>
 
         <div class="p-6">
@@ -80,7 +80,7 @@
                     <a href="/cuti"
                        class="block px-4 py-3 rounded-xl
                        {{ request()->is('cuti*') ? 'bg-green-600 font-bold' : 'hover:bg-green-600' }}">
-                        Pengajuan Cuti
+                        Rekapitulasi Pengajuan Cuti
                     </a>
                 </li>
 

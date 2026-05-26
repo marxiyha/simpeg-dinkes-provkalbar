@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Dinas Kesehatan Kalbar</title>
+    <title>Register SI-REKAP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial; }
         body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #f3f4f6; }
@@ -31,7 +31,8 @@
 
 <div class="box">
     <div class="header">
-        <h1>REGISTRASI AKUN</h1>
+        <h1>REGISTRASI AKUN SI-REKAP</h1>
+        <h2>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h2>
         <p>Dinas Kesehatan Provinsi Kalimantan Barat</p>
     </div>
 
@@ -71,7 +72,7 @@
     </div>
 
     <div class="footer">
-        © {{ date('Y') }} Dinas Kesehatan Kalbar
+        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat 
     </div>
 </div>
 

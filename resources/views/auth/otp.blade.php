@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi OTP - Dinas Kesehatan Kalbar</title>
+    <title>Verifikasi OTP SI-REKAP</title>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; }
@@ -101,6 +101,7 @@
 <div class="box">
     <div class="header">
         <h1>VERIFIKASI OTP</h1>
+        <h2>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h2>
         <p>Masukkan 6 digit kode dari log Laravel</p>
     </div>
 

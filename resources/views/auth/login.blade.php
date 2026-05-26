@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Dinas Kesehatan Kalbar</title>
+    <title>Login SI-REKAP</title>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; }
@@ -91,8 +91,8 @@
 <div class="box">
 
     <div class="header">
-        <h1>SISTEM DINAS KESEHATAN</h1>
-        <p>Provinsi Kalimantan Barat</p>
+        <h1>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h1>
+        <h2>Dinas Kesehatan Provinsi Kalimantan Barat</h2>
     </div>
 
     @if($errors->any())
@@ -119,7 +119,7 @@
     </div>
 
     <div class="footer">
-        © {{ date('Y') }} Dinas Kesehatan Kalbar
+        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat 
     </div>
 
 </div>
