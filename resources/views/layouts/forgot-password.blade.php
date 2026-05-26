@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - Dinas Kesehatan Kalbar</title>
+    <title>Reset Password SI-REKAP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial; }
         body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #f3f4f6; }
@@ -32,7 +32,8 @@
 
 <div class="box">
     <div class="header">
-        <h1>RESET PASSWORD</h1>
+        <h1>RESET PASSWORD SI-REKAP</h1>
+        <h1>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h1>
         <p>Masukkan email dan password baru Anda</p>
     </div>
 
@@ -67,7 +68,7 @@
     </div>
 
     <div class="footer">
-        © {{ date('Y') }} Dinas Kesehatan Kalbar
+        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat
     </div>
 </div>
 

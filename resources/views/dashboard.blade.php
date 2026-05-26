@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMPEG PETINGGI</title>
+    <title>SI-REKAP PETINGGI</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -630,7 +630,7 @@
         <div class="sidebar-top">
             <div class="logo">
                 <div class="logo-icon">DK</div>
-                <div class="logo-text">SIMPEG</div>
+                <div class="logo-text">SI-REKAP</div>
             </div>
 
             <div class="menu-title">MENU UTAMA</div>
@@ -675,7 +675,8 @@
 
     <div class="main">
         <div class="topbar">
-            <h2>Dashboard Monitoring Kepegawaian</h2>
+            <h2>Dashboard SI-REKAP Petinggi</h2>
+            <h3>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h3>
             <div class="topbar-right">
                 <button class="btn btn-green" onclick="openPanduan()">Panduan</button>
                 <button class="btn btn-white" onclick="openProfile()">Profil</button>
@@ -685,7 +686,7 @@
         <div class="dashboard">
             <div class="welcome-box">
                 <h1>Selamat Datang</h1>
-                <p>Monitor dan kelola data pengajuan cuti serta agenda dinas luar pegawai Dinas Kesehatan secara terintegrasi melalui panel kendali petinggi.</p>
+                <p>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian (SI-REKAP) untuk Petinggi.</p>
             </div>
 
             <div class="menu-grid">

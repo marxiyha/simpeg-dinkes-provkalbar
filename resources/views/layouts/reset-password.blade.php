@@ -2,11 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Reset Password</title>
+    <title>Reset Password SI-REKAP</title>
 </head>
 <body>
 
-    <h2>Reset Password</h2>
+    <h2>Reset Password SI-REKAP</h2>
+    <h2>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h2>
 
     <form method="POST" action="{{ route('password.update') }}">
         @csrf
