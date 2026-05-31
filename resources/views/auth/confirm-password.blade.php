@@ -1,27 +1,39 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
+@extends('layouts.app')
 
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
+@section('content')
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
+<div class="min-h-screen flex items-center justify-center">
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+<div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+<h1 class="text-3xl font-bold text-green-700 mb-6 text-center">
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+Konfirmasi Password
+
+</h1>
+
+<form method="POST" action="{{ route('password.confirm') }}">
+
+@csrf
+
+<input
+type="password"
+name="password"
+placeholder="Masukkan Password"
+class="w-full border-2 border-green-300 rounded-xl p-3 mb-6"
+required>
+
+<button
+class="w-full bg-green-700 text-white p-3 rounded-xl font-bold">
+
+Konfirmasi
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+@endsection

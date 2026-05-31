@@ -2,46 +2,80 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMPEG PETINGGI</title>
+    <title>SUPER ADMIN SI-REKAP</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css','resources/js/app.js'])
 
     <style>
-        body {
-            background: linear-gradient(135deg, #6aad1a, #3d690c);
-            min-height: 100vh;
-            font-family: 'Segoe UI';
+
+        body{
+            margin:0;
+            padding:0;
+            font-family:Segoe UI;
+            background:#5d8f2a;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
         }
 
-        .auth-card {
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        .auth-box{
+            width:420px;
+            background:white;
+            padding:40px;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .left-side {
-            background: #3d690c;
-            color: white;
-            padding: 50px;
+        h1{
+            text-align:center;
+            color:#3d6820;
+            margin-bottom:30px;
         }
 
-        .btn-leaf {
-            background: #6aad1a;
-            border: none;
-            color: white;
-            font-weight: bold;
+        input{
+            width:100%;
+            padding:14px;
+            margin-bottom:15px;
+            border-radius:10px;
+            border:1px solid #ccc;
+            font-size:15px;
         }
 
-        .btn-leaf:hover {
-            background: #3d690c;
+        button{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:#5d8f2a;
+            color:white;
+            font-size:16px;
+            cursor:pointer;
         }
+
+        button:hover{
+            background:#4d7723;
+        }
+
+        a{
+            color:#3d6820;
+            text-decoration:none;
+        }
+
+        .text-center{
+            text-align:center;
+        }
+
+        .mt-3{
+            margin-top:15px;
+        }
+
     </style>
 </head>
 <body>
 
-<div class="container d-flex align-items-center justify-content-center min-vh-100">
-    @yield('content')
+<div class="auth-box">
+    {{ $slot }}
 </div>
 
 </body>
