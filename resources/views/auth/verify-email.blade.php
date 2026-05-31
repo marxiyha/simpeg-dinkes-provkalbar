@@ -1,69 +1,31 @@
-@extends('layouts.app')
+<x-guest-layout>
+    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
+    </div>
 
-@section('content')
+    @if (session('status') == 'verification-link-sent')
+        <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
+            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+        </div>
+    @endif
 
-<div class="min-h-screen flex items-center justify-center bg-green-100">
+    <div class="mt-4 flex items-center justify-between">
+        <form method="POST" action="{{ route('verification.send') }}">
+            @csrf
 
-<div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg">
+            <div>
+                <x-primary-button>
+                    {{ __('Resend Verification Email') }}
+                </x-primary-button>
+            </div>
+        </form>
 
-<h1 class="text-4xl font-bold text-center text-green-700 mb-4">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
 
-VERIFIKASI EMAIL
-
-</h1>
-
-<p class="text-center text-green-700 mb-8 leading-relaxed">
-
-Terima kasih telah mendaftar di Sistem Super Admin Dinkes.
-Sebelum melanjutkan, silakan verifikasi email Anda terlebih dahulu
-melalui link yang telah dikirim ke email Anda.
-
-</p>
-
-@if (session('status') == 'verification-link-sent')
-
-<div class="bg-green-100 border border-green-300 text-green-700 p-4 rounded-xl mb-6">
-
-Link verifikasi baru berhasil dikirim ke email Anda.
-
-</div>
-
-@endif
-
-<div class="flex flex-col gap-4">
-
-<form method="POST" action="{{ route('verification.send') }}">
-
-@csrf
-
-<button
-type="submit"
-class="w-full bg-green-700 hover:bg-green-800 text-white font-bold p-3 rounded-xl transition">
-
-KIRIM ULANG EMAIL VERIFIKASI
-
-</button>
-
-</form>
-
-<form method="POST" action="{{ route('logout') }}">
-
-@csrf
-
-<button
-type="submit"
-class="w-full bg-red-500 hover:bg-red-600 text-white font-bold p-3 rounded-xl transition">
-
-LOGOUT
-
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-@endsection
+            <button type="submit" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                {{ __('Log Out') }}
+            </button>
+        </form>
+    </div>
+</x-guest-layout>

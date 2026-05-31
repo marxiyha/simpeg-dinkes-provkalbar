@@ -1,80 +1,114 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register SI-REKAP</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial; }
-        body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #f3f4f6; }
-        .box { width: 420px; background: #fff; padding: 32px; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { font-size: 18px; font-weight: 700; color: #111827; }
-        .header p { font-size: 13px; color: #6b7280; }
-        
-        /* Error Message Style */
-        .error-box { background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 15px; }
-        
-        label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-top: 10px; }
-        input { width: 100%; padding: 11px; margin-top: 4px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; }
-        input:focus { border-color: #00A843; box-shadow: 0 0 0 3px rgba(0,168,67,0.15); }
-        
-        .btn { width: 100%; padding: 12px; margin-top: 20px; background: #00A843; border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; }
-        .btn:hover { background: #008d38; }
-        
-        .links { text-align: center; margin-top: 14px; font-size: 12px; }
-        .links a { color: #00A843; font-weight: 600; text-decoration: none; }
-        .footer { text-align: center; margin-top: 18px; font-size: 11px; color: #9ca3af; }
-    </style>
-</head>
-<body>
+<x-guest-layout>
 
-<div class="box">
-    <div class="header">
-        <h1>REGISTRASI AKUN SI-REKAP</h1>
-        <h2>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h2>
-        <p>Dinas Kesehatan Provinsi Kalimantan Barat</p>
-    </div>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
 
-    @if ($errors->any())
-        <div class="error-box">
-            <ul style="list-style: none;">
-                @foreach ($errors->all() as $error)
-                    <li>• {{ $error }}</li>
-                @endforeach
-            </ul>
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md border border-gray-200">
+
+        <!-- HEADER INSTANSI -->
+        <div class="text-center mb-6">
+
+            <h1 class="text-lg font-bold text-gray-800 leading-snug">
+                SISTEM INFORMASI DINAS KESEHATAN
+                <br>
+                PROVINSI KALIMANTAN BARAT
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-2">
+                Registrasi Akun Pengguna Sistem
+            </p>
+
         </div>
-    @endif
 
-    <form method="POST" action="{{ route('register.post') }}">
-        @csrf
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
 
-        <label>Nama Lengkap</label>
-        <input type="text" name="name" value="{{ old('name') }}" required>
+            <!-- NAME -->
+            <div class="mb-4">
+                <x-input-label for="name" :value="__('Nama Lengkap')" />
 
-        <label>Username</label>
-        <input type="text" name="username" value="{{ old('username') }}" required>
+                <x-text-input id="name"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="text"
+                              name="name"
+                              :value="old('name')"
+                              required
+                              autofocus
+                              autocomplete="name" />
 
-        <label>Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" required>
+                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            </div>
 
-        <label>Password</label>
-        <input type="password" name="password" required>
+            <!-- EMAIL -->
+            <div class="mb-4">
+                <x-input-label for="email" :value="__('Email Resmi')" />
 
-        <label>Konfirmasi Password</label>
-        <input type="password" name="password_confirmation" required>
+                <x-text-input id="email"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="email"
+                              name="email"
+                              :value="old('email')"
+                              required
+                              autocomplete="username" />
 
-        <button type="submit" class="btn">DAFTAR</button>
-    </form>
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
 
-    <div class="links">
-        Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
+            <!-- PASSWORD -->
+            <div class="mb-4">
+                <x-input-label for="password" :value="__('Password')" />
+
+                <x-text-input id="password"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="password"
+                              name="password"
+                              required
+                              autocomplete="new-password" />
+
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="mb-6">
+                <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
+
+                <x-text-input id="password_confirmation"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="password"
+                              name="password_confirmation"
+                              required
+                              autocomplete="new-password" />
+
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            </div>
+
+            <!-- BUTTON -->
+            <x-primary-button class="w-full flex justify-center bg-blue-600 hover:bg-blue-700 focus:bg-blue-700">
+                {{ __('DAFTAR AKUN') }}
+            </x-primary-button>
+
+            <!-- LOGIN LINK -->
+            <div class="text-center mt-4 text-sm">
+
+                <span class="text-gray-600">
+                    Sudah punya akun?
+                </span>
+
+                <a href="{{ route('login') }}"
+                   class="text-blue-600 font-semibold hover:underline">
+                    Login
+                </a>
+
+            </div>
+
+        </form>
+
+        <!-- FOOTER -->
+        <div class="text-center mt-6 text-xs text-gray-400">
+            © {{ date('Y') }} Dinas Kesehatan Provinsi Kalimantan Barat
+        </div>
+
     </div>
 
-    <div class="footer">
-        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat 
-    </div>
 </div>
 
-</body>
-</html>
+</x-guest-layout>

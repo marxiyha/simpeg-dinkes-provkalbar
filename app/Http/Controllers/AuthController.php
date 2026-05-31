@@ -58,7 +58,7 @@ class AuthController extends Controller
     public function otpForm()
     {
         if (!session()->has('otp_user_id')) return redirect()->route('login');
-        return view('auth.otp');
+        return view('layouts.otp');
     }
 
     // FUNGSI YANG DICARI ROUTE

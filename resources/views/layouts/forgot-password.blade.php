@@ -1,89 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Lupa Password</title>
-
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f4f7f1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
-
-.box{
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    width:350px;
-    text-align:center;
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
-
-button{
-    width:100%;
-    padding:10px;
-    background:#4f7f16;
-    color:white;
-    border:none;
-    border-radius:8px;
-}
-
-a{
-    display:block;
-    margin-top:10px;
-    color:#4f7f16;
-    text-decoration:none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password SI-REKAP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial; }
+        body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #f3f4f6; }
+        .box { width: 420px; background: #fff; padding: 32px; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 18px; font-weight: 700; color: #111827; }
+        .header p { font-size: 13px; color: #6b7280; margin-top: 5px; }
+        
+        /* Error Message Style */
+        .error-box { background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 15px; }
+        
+        label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-top: 10px; }
+        input { width: 100%; padding: 11px; margin-top: 4px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; }
+        input:focus { border-color: #00A843; box-shadow: 0 0 0 3px rgba(0,168,67,0.15); }
+        
+        .btn { width: 100%; padding: 12px; margin-top: 20px; background: #00A843; border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; }
+        .btn:hover { background: #008d38; }
+        
+        .links { display: flex; justify-content: space-between; margin-top: 14px; font-size: 12px; }
+        .links a { color: #00A843; text-decoration: none; font-weight: 600; }
+        
+        .footer { text-align: center; margin-top: 18px; font-size: 11px; color: #9ca3af; }
+    </style>
 </head>
-
 <body>
 
 <div class="box">
+    <div class="header">
+        <h1>RESET PASSWORD SI-REKAP</h1>
+        <h1>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h1>
+        <p>Masukkan email dan password baru Anda</p>
+    </div>
 
-    <h2>Lupa Password</h2>
+    @if ($errors->any())
+        <div class="error-box">
+            <ul style="list-style: none;">
+                @foreach ($errors->all() as $error)
+                    <li>• {{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <form method="POST" action="/forgot-password">
+    <form method="POST" action="{{ route('password.update') }}">
         @csrf
 
+        <label>Email</label>
+        <input type="email" name="email" value="{{ old('email') }}" required autofocus>
 
-        <input type="email" name="email" placeholder="Email" required>
+        <label>Password Baru</label>
+        <input type="password" name="password" required>
 
-        <input type="password" id="p1" name="password" placeholder="Password Baru" required>
+        <label>Konfirmasi Password Baru</label>
+        <input type="password" name="password_confirmation" required>
 
-        <input type="password" id="p2" name="password_confirmation" placeholder="Konfirmasi Password Baru" required>
-
-        <label>
-            <input type="checkbox" onclick="toggle()"> Show Password
-        </label>
-
-        <button type="submit">Kirim</button>
+        <button type="submit" class="btn">SIMPAN PASSWORD</button>
     </form>
 
-    <a href="/login">Kembali ke Login</a>
+    <div class="links">
+        <a href="{{ route('login') }}">← Kembali Login</a>
+        <a href="{{ route('register') }}">Daftar Baru</a>
+    </div>
 
+    <div class="footer">
+        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat
+    </div>
 </div>
-
-<script>
-function toggle(){
-    let a = document.getElementById("p1");
-    let b = document.getElementById("p2");
-
-    a.type = a.type === "password" ? "text" : "password";
-    b.type = b.type === "password" ? "text" : "password";
-}
-</script>
 
 </body>
 </html>

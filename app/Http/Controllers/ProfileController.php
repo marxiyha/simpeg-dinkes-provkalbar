@@ -6,13 +6,14 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * TAMPILKAN HALAMAN PROFILE
      */
     public function edit(Request $request): View
     {
@@ -22,39 +23,66 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * UPDATE PROFILE (nama, email, dll)
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($request->validated());
+
+        // jika email berubah → reset verifikasi
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated');
     }
 
     /**
-     * Delete the user's account.
+     * UPDATE PASSWORD
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'password' => ['required', 'min:6', 'confirmed'],
+        ]);
+
+        $user = $request->user();
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'password-updated');
+    }
+
+    /**
+     * HAPUS AKUN (SUDAH DISINKRONKAN DENGAN DASHBOARD)
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
+        // validasi password sebelum hapus akun
+        $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
 
+        // logout user dulu
         Auth::logout();
 
+        // hapus user dari database
         $user->delete();
 
+        // amankan session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        // redirect ke login
+        return Redirect::to('/login');
     }
 }

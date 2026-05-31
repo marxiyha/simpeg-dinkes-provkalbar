@@ -1,79 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
-<title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN SI-REKAP</title>
 
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f4f7f1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; }
 
-.box{
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    width:350px;
-    text-align:center;
-}
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f3f4f6;
+        }
 
-input{
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
+        .box {
+            width: 420px;
+            background: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
 
-button{
-    width:100%;
-    padding:10px;
-    background:#4f7f16;
-    color:white;
-    border:none;
-    border-radius:8px;
-}
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 { font-size: 18px; font-weight: 800; color: #111827; }
+        .header p { font-size: 13px; color: #6b7280; margin-top: 5px; }
 
-a{
-    display:block;
-    margin-top:10px;
-    color:#4f7f16;
-    text-decoration:none;
-}
-</style>
+        label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-top: 12px; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #00A843;
+            box-shadow: 0 0 0 3px rgba(0, 168, 67, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #00A843;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover { background: #008d38; }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-size: 12px;
+        }
+
+        .links a { color: #00A843; text-decoration: none; font-weight: 600; }
+        .links a:hover { text-decoration: underline; }
+
+        .footer { text-align: center; margin-top: 24px; font-size: 11px; color: #9ca3af; }
+    </style>
 </head>
 
 <body>
 
 <div class="box">
 
-    <h2>LOGIN</h2>
-<form method="POST" action="/login">
-    @csrf
+    <div class="header">
+        <h1>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h1>
+        <h1>Dinas Kesehatan Provinsi Kalimantan Barat</h1>
+    </div>
 
-    <input type="email" name="email" placeholder="Email" required>
+    @if($errors->any())
+        <div class="error">
+            {{ $errors->first() }}
+        </div>
+    @endif
 
-    <input type="password" id="pass" name="password" placeholder="Password" required>
+    <form method="POST" action="{{ route('login.post') }}">
+        @csrf
 
-    <label>
-        <input type="checkbox" onclick="toggle()"> Show Password
-    </label>
+        <label>Email</label>
+        <input type="email" name="email" placeholder="contoh@email.com" required>
 
-    <button type="submit">Login</button>
-</form>
+        <label>Password</label>
+        <input type="password" name="password" placeholder="••••••••" required>
 
-<a href="/register">Belum punya akun?</a>
+        <button type="submit" class="btn">LOGIN</button>
+    </form>
 
-<script>
-function toggle(){
-    let p = document.getElementById("pass");
-    p.type = (p.type === "password") ? "text" : "password";
-}
-</script>
+    <div class="links">
+        <a href="{{ url('/register') }}">Daftar Akun</a>
+        <a href="{{ url('/forgot-password') }}">Lupa Password?</a>
+    </div>
+
+    <div class="footer">
+        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat
+    </div>
+
+</div>
+
 </body>
 </html>

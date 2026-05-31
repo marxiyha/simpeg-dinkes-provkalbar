@@ -1,76 +1,89 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian (SI-REKAP)</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Arial; }
-        body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #f3f4f6; }
-        .box { width: 420px; background: #fff; padding: 32px; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { font-size: 18px; font-weight: 700; color: #111827; }
-        .header p { font-size: 13px; color: #6b7280; margin-top: 5px; }
-        
-        /* Error Message Style */
-        .error-box { background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 15px; }
-        
-        label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-top: 10px; }
-        input { width: 100%; padding: 11px; margin-top: 4px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; }
-        input:focus { border-color: #00A843; box-shadow: 0 0 0 3px rgba(0,168,67,0.15); }
-        
-        .btn { width: 100%; padding: 12px; margin-top: 20px; background: #00A843; border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; }
-        .btn:hover { background: #008d38; }
-        
-        .links { display: flex; justify-content: space-between; margin-top: 14px; font-size: 12px; }
-        .links a { color: #00A843; text-decoration: none; font-weight: 600; }
-        
-        .footer { text-align: center; margin-top: 18px; font-size: 11px; color: #9ca3af; }
-    </style>
-</head>
-<body>
+<x-guest-layout>
 
-<div class="box">
-    <div class="header">
-        <h1>RESET PASSWORD SI-REKAP</h1>
-        <h2>Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian</h2>
-        <p>Masukkan email dan password baru Anda</p>
-    </div>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
 
-    @if ($errors->any())
-        <div class="error-box">
-            <ul style="list-style: none;">
-                @foreach ($errors->all() as $error)
-                    <li>• {{ $error }}</li>
-                @endforeach
-            </ul>
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md border border-gray-200">
+
+        <!-- HEADER INSTANSI -->
+        <div class="text-center mb-6">
+
+            <h1 class="text-lg font-bold text-gray-800">
+                SISTEM INFORMASI DINAS KESEHATAN
+                <br>
+                PROVINSI KALIMANTAN BARAT
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-2">
+                Reset Password Akun Pengguna
+            </p>
+
         </div>
-    @endif
 
-    <form method="POST" action="{{ route('password.update') }}">
-        @csrf
+        <!-- STATUS -->
+        <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <label>Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" required autofocus>
+        <!-- FORM -->
+        <form method="POST" action="{{ route('password.update') }}">
+            @csrf
 
-        <label>Password Baru</label>
-        <input type="password" name="password" required>
+            <!-- TOKEN -->
+            <input type="hidden" name="token" value="{{ request()->route('token') }}">
 
-        <label>Konfirmasi Password Baru</label>
-        <input type="password" name="password_confirmation" required>
+            <!-- EMAIL -->
+            <div class="mb-4">
+                <x-input-label for="email" :value="__('Email Terdaftar')" />
 
-        <button type="submit" class="btn">SIMPAN PASSWORD</button>
-    </form>
+                <x-text-input id="email"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="email"
+                              name="email"
+                              :value="old('email', request()->email)"
+                              required
+                              autofocus />
 
-    <div class="links">
-        <a href="{{ route('login') }}">← Kembali Login</a>
-        <a href="{{ route('register') }}">Daftar Baru</a>
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            <!-- PASSWORD BARU -->
+            <div class="mb-4">
+                <x-input-label for="password" :value="__('Password Baru')" />
+
+                <x-text-input id="password"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="password"
+                              name="password"
+                              required />
+
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
+
+            <!-- KONFIRMASI PASSWORD -->
+            <div class="mb-6">
+                <x-input-label for="password_confirmation" :value="__('Konfirmasi Password Baru')" />
+
+                <x-text-input id="password_confirmation"
+                              class="block mt-1 w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600"
+                              type="password"
+                              name="password_confirmation"
+                              required />
+
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            </div>
+
+            <!-- BUTTON -->
+            <x-primary-button class="w-full flex justify-center bg-blue-600 hover:bg-blue-700">
+                {{ __('RESET PASSWORD') }}
+            </x-primary-button>
+
+        </form>
+
+        <!-- FOOTER -->
+        <div class="text-center mt-6 text-xs text-gray-400">
+            © {{ date('Y') }} Dinas Kesehatan Provinsi Kalimantan Barat
+        </div>
+
     </div>
 
-    <div class="footer">
-        © {{ date('Y') }} Sistem Informasi Rekapitulasi dan Evaluasi Kepegawaian Dinas Kesehatan Kalimantan Barat 
-    </div>
 </div>
 
-</body>
-</html>
+</x-guest-layout>
