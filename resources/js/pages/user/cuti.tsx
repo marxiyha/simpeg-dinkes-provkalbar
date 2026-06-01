@@ -31,20 +31,12 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
         return sisaCuti;
     });
     
-    // Persist localRiwayatCuti across refreshes
-    const [localRiwayat, setLocalRiwayat] = useState<RiwayatCuti[]>(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('localRiwayatCuti');
-            if (saved !== null) {
-                try {
-                    return JSON.parse(saved);
-                } catch (e) {
-                    return riwayatCuti;
-                }
-            }
-        }
-        return riwayatCuti;
-    });
+    // Initialize riwayat from backend prop
+    const [localRiwayat, setLocalRiwayat] = useState<RiwayatCuti[]>(riwayatCuti);
+
+    React.useEffect(() => {
+        setLocalRiwayat(riwayatCuti);
+    }, [riwayatCuti]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,7 +63,7 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
         return count;
     };
 
-    // Mockup submit handler
+    // Actual submit handler sending to Laravel backend database
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -92,41 +84,31 @@ export default function UserCutiPage({ auth, sisaCuti = 24, riwayatCuti = [] }: 
             return;
         }
 
-        // Update sisa cuti and save to localStorage
-        setLocalSisaCuti(prev => {
-            const newVal = prev - potong;
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('localSisaCuti', newVal.toString());
-            }
-            return newVal;
-        });
+        post('/cuti/store', {
+            onSuccess: () => {
+                // Update sisa cuti and save to localStorage
+                setLocalSisaCuti(prev => {
+                    const newVal = prev - potong;
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('localSisaCuti', newVal.toString());
+                    }
+                    return newVal;
+                });
 
-        // Add submitted leave to history and save to localStorage
-        const newRecord: RiwayatCuti = {
-            jenis_cuti: data.jenis_cuti === 'Tahunan' ? 'Cuti Tahunan' : `Cuti ${data.jenis_cuti}`,
-            tanggal_mulai: data.tanggal_mulai,
-            tanggal_selesai: data.tanggal_selesai,
-            status: 'Menunggu',
-            alasan: data.alasan,
-        };
-
-        setLocalRiwayat(prev => {
-            const newHistory = [newRecord, ...prev];
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('localRiwayatCuti', JSON.stringify(newHistory));
+                const successMsg = data.jenis_cuti === 'Tahunan' 
+                    ? `Pengajuan cuti berhasil! Jatah cuti dipotong ${potong} hari kerja.`
+                    : `Pengajuan ${data.jenis_cuti} berhasil dikirim!`;
+                
+                toast.success(successMsg);
+                reset();
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            },
+            onError: (err) => {
+                toast.error(err.message || 'Gagal mengirim pengajuan cuti.');
             }
-            return newHistory;
         });
-        
-        const successMsg = data.jenis_cuti === 'Tahunan' 
-            ? `Pengajuan cuti berhasil! Jatah cuti dipotong ${potong} hari kerja.`
-            : `Pengajuan ${data.jenis_cuti} berhasil dikirim!`;
-        
-        toast.success(successMsg);
-        reset();
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
     };
 
     const pegawai: any = auth.user;

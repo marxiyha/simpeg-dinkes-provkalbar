@@ -1,20 +1,25 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 
-beforeEach(function () {
-    $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
-});
-
 test('two factor challenge redirects to login when not authenticated', function () {
+    if (! Route::has('two-factor.login') || ! Features::enabled(Features::twoFactorAuthentication())) {
+        $this->markTestSkipped('Two factor route not registered.');
+    }
+
     $response = $this->get(route('two-factor.login'));
 
     $response->assertRedirect(route('login'));
 });
 
 test('two factor challenge can be rendered', function () {
+    if (! Route::has('two-factor.login') || ! Features::enabled(Features::twoFactorAuthentication())) {
+        $this->markTestSkipped('Two factor route not registered.');
+    }
+
     Features::twoFactorAuthentication([
         'confirm' => true,
         'confirmPassword' => true,

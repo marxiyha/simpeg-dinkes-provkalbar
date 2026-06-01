@@ -8,45 +8,31 @@ class PengajuanCutiController extends Controller
 {
     public function index()
     {
-        if (!session()->has('cuti_data')) {
-            session([
-                'cuti_data' => []
-            ]);
-        }
+        $cuti = \App\Models\Cuti::with('user.unitKerja')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('cuti.index', [
-            'cuti' => session('cuti_data')
-        ]);
+        return view('cuti.index', compact('cuti'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'bidang' => 'required',
             'jenis_cuti' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan_cuti' => 'required'
+            'alasan' => 'required'
         ]);
 
-        $cuti = session('cuti_data', []);
-
-        $newId = count($cuti) > 0 ? max(array_column($cuti, 'id')) + 1 : 1;
-
-        $cuti[] = [
-            'id' => $newId,
-            'nama' => $request->nama,
-            'bidang' => $request->bidang,
+        \App\Models\Cuti::create([
+            'user_id' => auth()->id(),
             'jenis_cuti' => $request->jenis_cuti,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
-            'alasan_cuti' => $request->alasan_cuti,
+            'alasan' => $request->alasan,
             'status' => 'Pending',
-        ];
+        ]);
 
-        session(['cuti_data' => $cuti]);
-
-        return redirect()->back()->with('success', 'Pengajuan berhasil dikirim');
+        return redirect()->back()->with('success', 'Pengajuan cuti berhasil dikirim');
     }
 }

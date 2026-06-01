@@ -80,4 +80,51 @@ class CutiController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * UPDATE STATUS FROM HTML FORM
+     */
+    public function updateStatusHtml(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'status_pengajuan' => 'required|in:Menunggu,Disetujui,Ditolak'
+            ]);
+
+            $cuti = Cuti::findOrFail($id);
+            $status = $request->status_pengajuan === 'Menunggu' ? 'Pending' : $request->status_pengajuan;
+            $cuti->status = $status;
+            $cuti->save();
+
+            return redirect()->back()->with('success', 'Status cuti berhasil diperbarui.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal update status cuti: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all(),
+                'id' => $id
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'Gagal mengubah status: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * DELETE CUTI FROM HTML FORM
+     */
+    public function deleteCuti($id)
+    {
+        try {
+            $cuti = Cuti::findOrFail($id);
+            $cuti->delete();
+
+            return redirect()->back()->with('success', 'Pengajuan cuti berhasil dihapus.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menghapus cuti: ' . $e->getMessage(), [
+                'exception' => $e,
+                'id' => $id
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'Gagal menghapus cuti: ' . $e->getMessage()]);
+        }
+    }
 }

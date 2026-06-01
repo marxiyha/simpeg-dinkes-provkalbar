@@ -1,4 +1,5 @@
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, router } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,10 +11,40 @@ export default function VerifyOtp() {
         otp: '',
     });
 
+    const [secondsLeft, setSecondsLeft] = useState(300);
+    const [isResending, setIsResending] = useState(false);
+
+    useEffect(() => {
+        if (secondsLeft <= 0) return;
+        const timer = setInterval(() => {
+            setSecondsLeft((prev) => prev - 1);
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [secondsLeft]);
+
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Since we bypassed Ziggy/Wayfinder route generation for now, just use direct URL path
         post('/otp-verify');
+    };
+
+    const handleResend = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResending(true);
+        router.post('/otp/resend', {}, {
+            onSuccess: () => {
+                setSecondsLeft(300);
+                setIsResending(false);
+            },
+            onError: () => {
+                setIsResending(false);
+            }
+        });
     };
 
     return (
@@ -23,7 +54,12 @@ export default function VerifyOtp() {
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="otp">Kode OTP</Label>
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="otp">Kode OTP</Label>
+                            <span className={`text-sm font-medium ${secondsLeft === 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                {secondsLeft > 0 ? `Sisa waktu: ${formatTime(secondsLeft)}` : 'OTP Kedaluwarsa'}
+                            </span>
+                        </div>
                         <Input
                             id="otp"
                             type="text"
@@ -34,7 +70,14 @@ export default function VerifyOtp() {
                             value={data.otp}
                             onChange={(e) => setData('otp', e.target.value)}
                             placeholder="123456"
+                            className="text-center tracking-[0.5em] text-lg font-mono"
+                            disabled={secondsLeft === 0}
                         />
+                        {secondsLeft === 0 && (
+                            <p className="text-sm text-destructive mt-1">
+                                Kode OTP telah kedaluwarsa. Silakan klik tombol "Kirim Ulang OTP" di bawah untuk mendapatkan kode baru.
+                            </p>
+                        )}
                         <InputError message={errors.otp} />
                     </div>
 
@@ -42,11 +85,24 @@ export default function VerifyOtp() {
                         <Button
                             type="submit"
                             className="w-full"
-                            disabled={processing}
+                            disabled={processing || secondsLeft === 0}
                         >
                             {processing && <Spinner />}
                             Verifikasi & Lanjutkan
                         </Button>
+
+                        <div className="flex gap-4 mt-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full"
+                                onClick={handleResend}
+                                disabled={secondsLeft > 0 || isResending}
+                            >
+                                {isResending && <Spinner />}
+                                Kirim Ulang OTP
+                            </Button>
+                        </div>
                         <Link
                             href="/logout"
                             method="post"

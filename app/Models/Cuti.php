@@ -31,4 +31,25 @@ class Cuti extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESSORS FOR BLADE COMPATIBILITY
+    |--------------------------------------------------------------------------
+    */
+
+    public function getNamaAttribute()
+    {
+        return $this->user?->name ?? '-';
+    }
+
+    public function getStatusPengajuanAttribute()
+    {
+        return $this->status === 'Pending' ? 'Menunggu' : $this->status;
+    }
+
+    public function getBidangAttribute()
+    {
+        return $this->user?->unitKerja?->nama_unit ?? 'Dinas Kesehatan';
+    }
 }
